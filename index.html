@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valeria &amp; David · 24 de abril de 2027</title>
+<meta name="description" content="Nos casamos. Acompáñanos el 24 de abril de 2027 en Huasca de Ocampo, Hidalgo.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#1E2C16">
+
+<!-- Vista previa al compartir el enlace (WhatsApp, Facebook, iMessage…).
+     IMPORTANTE: sustituye TU-USUARIO y TU-REPO por los tuyos cuando
+     publiques. WhatsApp exige direcciones absolutas para la imagen:
+     con rutas relativas no aparece la foto en la vista previa. -->
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="Valeria &amp; David · Nos casamos">
+<meta property="og:description" content="24 de abril de 2027 · Huasca de Ocampo, Hidalgo. Confirma tu asistencia aquí.">
+<meta property="og:image"       content="https://TU-USUARIO.github.io/TU-REPO/img/bn-abrazo.jpeg">
+<meta property="og:url"         content="https://TU-USUARIO.github.io/TU-REPO/">
+<meta property="og:locale"      content="es_MX">
+<meta name="twitter:card"       content="summary_large_image">
+
+<!-- ============================================================
+     PROPUESTA 4 — composición a medida
+       1. Portada (boda3)
+       2. Agradecimiento a los padres (boda3)
+       3. Agradecimiento a los padrinos (boda3)
+       4. Cuenta regresiva + invitación formal (boda3 ampliado)
+       5. Itinerario con barra de progreso de scroll (boda3 + nuevo)
+       6. Vestimenta y regalos (boda3)
+       7. Ceremonia y recepción (index)
+       8. Sugerencia de hospedaje (boda3)
+       9. Confirmación + agradecimiento final (boda3 + index)
+      10. Pie (boda2)
+
+     COLOR: el tema no usa colores fijos sino tokens semánticos
+     (fondo, tinta, profundo, acento…) conectados a variables CSS.
+     El botón inferior derecho reescribe esas variables, así que las
+     18 paletas funcionan sin tocar una sola clase del marcado.
+     ============================================================ -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Great+Vibes&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        fondo:   'rgb(var(--c-bg) / <alpha-value>)',
+        fondo2:  'rgb(var(--c-bg2) / <alpha-value>)',
+        linea:   'rgb(var(--c-line) / <alpha-value>)',
+        tinta:   'rgb(var(--c-ink) / <alpha-value>)',
+        hondo:   'rgb(var(--c-deep) / <alpha-value>)',
+        hondo2:  'rgb(var(--c-deep2) / <alpha-value>)',
+        suave:   'rgb(var(--c-soft) / <alpha-value>)',
+        acento:  'rgb(var(--c-accent) / <alpha-value>)',
+        acento2: 'rgb(var(--c-accent2) / <alpha-value>)',
+      },
+      fontFamily: {
+        serif:  ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans:   ['Montserrat', 'system-ui', 'sans-serif'],
+        script: ['"Great Vibes"', 'cursive'],
+      },
+    }
+  }
+}
+</script>
+
+<style>
+  /* Paleta inicial: Arena. El selector sobreescribe estas variables. */
+  :root {
+    --c-bg: 250 248 245;  --c-bg2: 243 239 232; --c-line: 227 220 206;
+    --c-ink: 47 41 29;    --c-deep: 39 31 17;   --c-deep2: 82 67 40;
+    --c-soft: 204 191 168; --c-accent: 214 170 81; --c-accent2: 129 92 19;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  /* Los desplazamientos laterales de entrada sacan bloques del ancho
+     de pantalla; sin esto aparecería scroll horizontal. clip antes que
+     hidden: no convierte al body en contenedor de scroll. */
+  body {
+    transition: background-color .5s ease, color .5s ease;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Entradas al hacer scroll.
+     Cada <section> declara data-efecto="…" y todos sus bloques
+     .reveal heredan esa variante. Añadir un efecto nuevo es añadir
+     una línea aquí; el marcado no cambia.
+     ───────────────────────────────────────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(-140px) scale(.88);   /* variante por defecto */
+    filter: blur(12px);
+    transition: opacity 1.1s ease,
+                transform 1.35s cubic-bezier(.16,.9,.36,1),
+                filter 1s ease,
+                clip-path 1.25s cubic-bezier(.16,.9,.36,1);
+    will-change: opacity, transform, filter;
+  }
+
+  /* Estado inicial de cada variante */
+  [data-efecto="abajo"]      .reveal { transform: translateY(-140px) scale(.88); }
+  [data-efecto="arriba"]     .reveal { transform: translateY(140px) scale(.88); }
+  [data-efecto="izquierda"]  .reveal { transform: translateX(-170px) rotate(-3deg); }
+  [data-efecto="derecha"]    .reveal { transform: translateX(170px) rotate(3deg); }
+  [data-efecto="zoom"]       .reveal { transform: scale(.5); filter: blur(16px); }
+  [data-efecto="alejar"]     .reveal { transform: scale(1.4); filter: blur(20px); }
+  [data-efecto="inclinar"]   .reveal { transform: translateY(-100px) rotate(-9deg) scale(.9); }
+  [data-efecto="enfoque"]    .reveal { transform: scale(1.08); filter: blur(32px); }
+
+  /* Se despliega como quien abre una carta */
+  [data-efecto="desplegar"]  .reveal {
+    transform: perspective(1200px) rotateX(-88deg) translateY(-30px);
+    transform-origin: top center;
+  }
+
+  /* Se descubre de arriba abajo, como una cortina */
+  [data-efecto="cortina"]    .reveal {
+    transform: translateY(-40px); filter: none;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  /* Estado final, común a todas las variantes */
+  .reveal.visible,
+  [data-efecto] .reveal.visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: inset(0 0 0 0);
+    will-change: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  .linea-orn { display: flex; align-items: center; justify-content: center; gap: .6rem; }
+  .linea-orn::before, .linea-orn::after { content: ''; height: 1px; width: 46px; background: currentColor; opacity: .5; }
+
+  .hojas {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='1.1'%3E%3Cpath d='M70 22c0 18-10 30-10 46s10 26 10 40'/%3E%3Cpath d='M70 40c-9-7-18-5-23-12M70 40c9-7 18-5 23-12M70 62c-10-7-20-5-25-13M70 62c10-7 20-5 25-13M70 84c-9-7-18-5-23-12M70 84c9-7 18-5 23-12'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 140px 140px;
+  }
+
+  /* Misma hoja en trazo oscuro, para usarla sobre fondos claros */
+  .hojas-tinta {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23000000' stroke-width='1.1'%3E%3Cpath d='M70 22c0 18-10 30-10 46s10 26 10 40'/%3E%3Cpath d='M70 40c-9-7-18-5-23-12M70 40c9-7 18-5 23-12M70 62c-10-7-20-5-25-13M70 62c10-7 20-5 25-13M70 84c-9-7-18-5-23-12M70 84c9-7 18-5 23-12'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 140px 140px;
+  }
+
+  /* ---- Itinerario: enredadera que crece con el scroll ----
+     El tallo se dibuja con stroke-dashoffset; hojas y flores brotan
+     cuando el crecimiento las alcanza. Todo se genera en JS a la
+     altura real de la lista, así nada se deforma. */
+  #enredadera { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+  .tallo-guia   { fill: none; stroke: rgb(var(--c-line)); stroke-width: 2; }
+  .tallo-activo { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2.4; stroke-linecap: round;
+                  transition: stroke-dashoffset .18s linear; }
+
+  .hoja {
+    fill: rgb(var(--c-accent)); opacity: 0; transform: scale(0);
+    transform-box: fill-box; transform-origin: 0% 50%;
+    transition: opacity .5s ease, transform .6s cubic-bezier(.34,1.56,.64,1);
+  }
+  .hoja.brotada { opacity: .85; transform: scale(1); }
+
+  .flor { opacity: 0; transform: scale(0); transform-box: fill-box; transform-origin: 50% 50%;
+          transition: opacity .45s ease, transform .65s cubic-bezier(.34,1.56,.64,1); }
+  .flor.brotada { opacity: 1; transform: scale(1); }
+  .flor .petalo { fill: rgb(var(--c-accent)); }
+  .flor .centro { fill: rgb(var(--c-bg)); }
+  .flor .capullo { fill: none; stroke: rgb(var(--c-line)); stroke-width: 1.6; }
+
+  .it-item { opacity: .45; transition: opacity .45s ease; }
+  .it-item.activo { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .it-item { opacity: 1; }
+    .hoja, .flor { opacity: 1; transform: none; transition: none; }
+    .tallo-activo { transition: none; }
+  }
+
+  /* ---- Collapse de padrinos ----
+     grid-template-rows de 0fr a 1fr anima hasta la altura real del
+     contenido sin tener que medirla con JS. */
+  #padrinosPanel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .75s cubic-bezier(.4,0,.2,1); }
+  #padrinosPanel.abierto { grid-template-rows: 1fr; }
+  #padrinosPanel > div { overflow: hidden; }
+  #chevPadrinos { transition: transform .5s ease; }
+  #btnPadrinos[aria-expanded="true"] #chevPadrinos { transform: rotate(180deg); }
+  @media (prefers-reduced-motion: reduce) { #padrinosPanel { transition: none; } }
+
+  /* Al imprimir, todo abierto: el PDF no debe perder a los padrinos */
+  @media print { #padrinosPanel { grid-template-rows: 1fr; } #btnPadrinos { display: none; } }
+
+  /* ---- Selector de paletas ---- */
+  #panelPaletas { transition: opacity .3s ease, transform .3s ease; transform-origin: bottom right; }
+  #panelPaletas.oculto { opacity: 0; transform: scale(.92) translateY(8px); pointer-events: none; }
+
+  /* ─────────────────────────────────────────────────────────────
+     Cursor de ramo de novia.
+     Solo donde hay puntero de verdad; en táctil no aplica. Los campos
+     de texto conservan su cursor para no perder la pista de escritura.
+     ───────────────────────────────────────────────────────────── */
+  @media (pointer: fine) {
+    body, body * { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2238%22%20height%3D%2238%22%20viewBox%3D%220%200%2038%2038%22%3E%3Cg%20stroke%3D%22%234A6B38%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M19%2036V22M19%2031l-6-9M19%2031l6-9%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M13%2023c-4-2-6-6-5-9%204%201%206%205%205%209z%22%20fill%3D%22%235F7F4B%22%2F%3E%3Cpath%20d%3D%22M25%2023c4-2%206-6%205-9-4%201-6%205-5%209z%22%20fill%3D%22%235F7F4B%22%2F%3E%3Cg%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.1%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2212%22%20r%3D%224.6%22%20fill%3D%22%23E4A2B4%22%2F%3E%3Ccircle%20cx%3D%2227%22%20cy%3D%2212%22%20r%3D%224.6%22%20fill%3D%22%23E4A2B4%22%2F%3E%3Ccircle%20cx%3D%2219%22%20cy%3D%227.5%22%20r%3D%225.4%22%20fill%3D%22%23E3B23C%22%2F%3E%3Ccircle%20cx%3D%2219%22%20cy%3D%2216%22%20r%3D%224.3%22%20fill%3D%22%23F4DDA8%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%238A6114%22%3E%3Ccircle%20cx%3D%2219%22%20cy%3D%227.5%22%20r%3D%221.5%22%2F%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2212%22%20r%3D%221.2%22%2F%3E%3Ccircle%20cx%3D%2227%22%20cy%3D%2212%22%20r%3D%221.2%22%2F%3E%3Ccircle%20cx%3D%2219%22%20cy%3D%2216%22%20r%3D%221.1%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M14%2025l5%202%205-2%22%20stroke%3D%22%23C9803D%22%20stroke-width%3D%222.2%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E") 8 4, auto; }
+    input, textarea, select, [contenteditable] { cursor: text; }
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Los novios: figuras fijas que cambian de pose con el scroll
+     ───────────────────────────────────────────────────────────── */
+  #novios {
+    position: fixed; left: 12px; bottom: 10px; z-index: 40;
+    width: 108px; height: 116px; pointer-events: none;
+    filter: drop-shadow(0 4px 10px rgb(0 0 0 / .18));
+  }
+  @media (min-width: 640px) { #novios { left: 20px; bottom: 16px; width: 132px; height: 142px; } }
+
+  /* Partes móviles: las alas y la cabeza rotan sobre su articulación */
+  #novios .ala, #novios .cabeza {
+    transform-box: view-box;
+    transition: transform .85s cubic-bezier(.34,1.25,.64,1);
+  }
+  #novios .figura { transition: transform .85s cubic-bezier(.34,1.25,.64,1); }
+
+  /* Respiración: un vaivén lento para que no parezcan estatuas */
+  @keyframes flotar { from { translate: 0 0; } to { translate: 0 -3px; } }
+  #gNovia { animation: flotar 3.4s ease-in-out infinite alternate; }
+  #gNovio { animation: flotar 3.4s ease-in-out infinite alternate .55s; }
+
+  /* Paleta de las palomas */
+  #novios .cuerpo-forma { fill: #FDFBF7; stroke: #DDD5C6; stroke-width: 1.1; stroke-linejoin: round; }
+  #novios .ala-forma    { fill: #F7F2E9; stroke: #DDD5C6; stroke-width: 1.1; stroke-linejoin: round; }
+  #novios .ala-frente   { fill: #FFFFFF; }
+  #novios .pico         { fill: #E8A33D; }
+  #novios .pata         { stroke: #E8A33D; stroke-width: 1.8; fill: none; stroke-linecap: round; }
+  #novios .ojo          { fill: #2B2018; }
+  #novios .velo         { fill: #FFFFFF; opacity: .75; }
+  #novios .velo-flor    { fill: rgb(var(--c-accent)); }
+  #novios .mono         { fill: rgb(var(--c-accent)); }
+
+  /* Ojos cerrados: el círculo se aplasta hasta parecer una línea */
+  #novios .ojo { transform-box: fill-box; transform-origin: center; transition: transform .4s ease; }
+  #novios.durmiendo .ojo { transform: scaleY(.15); }
+
+  /* Accesorios y burbujas entran y salen con un fundido */
+  #accesorio, #burbuja { transition: opacity .45s ease; }
+  #novios .pop { animation: pop .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes pop { from { opacity: 0; scale: .4; } to { opacity: 1; scale: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #novios .brazo, #novios .cabeza, #novios .figura { transition: none; }
+    #gNovia, #gNovio { animation: none; }
+    #novios .pop { animation: none; }
+  }
+
+  /* Capa de pétalos: nunca intercepta clics */
+  #petalos {
+    position: fixed; inset: 0; z-index: 40;
+    pointer-events: none; overflow: hidden;
+  }
+  #petalos svg { position: absolute; will-change: transform, opacity; }
+
+  summary::-webkit-details-marker { display: none; }
+</style>
+</head>
+
+<body class="bg-fondo text-tinta font-sans">
+
+<!-- ══════════ 1. PORTADA ══════════ -->
+<section class="relative min-h-[100svh] flex items-center justify-center overflow-hidden" data-pose="saludo">
+  <img src="img/bn-abrazo.jpeg" alt="" class="absolute inset-0 w-full h-full object-cover">
+  <div class="absolute inset-0 bg-hondo/70"></div>
+
+  <div class="relative z-10 text-center px-6 text-fondo w-full max-w-2xl">
+    <p class="font-sans text-[10px] tracking-[.5em] uppercase text-suave">Nuestra boda</p>
+
+    <h1 class="mt-8 font-script text-6xl sm:text-8xl" data-bind="nombres"></h1>
+
+    <div class="mt-12 flex items-stretch justify-center gap-6 sm:gap-10">
+      <div class="flex flex-col justify-center text-right">
+        <span class="font-sans text-[10px] sm:text-xs tracking-[.35em] uppercase" data-bind="fecha.dia"></span>
+      </div>
+      <div class="w-px bg-fondo/35"></div>
+      <div>
+        <span class="block font-serif text-7xl sm:text-9xl font-light leading-none" data-bind="fecha.numero"></span>
+      </div>
+      <div class="w-px bg-fondo/35"></div>
+      <div class="flex flex-col justify-center text-left">
+        <span class="font-sans text-[10px] sm:text-xs tracking-[.35em] uppercase" data-bind="fecha.mes"></span>
+        <span class="mt-1 font-sans text-[10px] sm:text-xs tracking-[.35em] uppercase opacity-70" data-bind="fecha.anio"></span>
+      </div>
+    </div>
+
+    <p class="mt-12 max-w-md mx-auto font-serif text-xl sm:text-2xl italic font-light leading-relaxed" data-bind="frasePortada"></p>
+  </div>
+
+  <a href="#padres" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-fondo/70 animate-bounce">↓</a>
+</section>
+
+<!-- ══════════ 2. PADRES ══════════ -->
+<section id="padres" class="py-24 px-6 bg-fondo" data-efecto="abajo" data-pose="abrazo">
+  <div class="max-w-4xl mx-auto space-y-16">
+    <div class="text-center reveal">
+      <p class="font-serif text-2xl sm:text-3xl italic font-light" data-bind="padres.dedicatoriaNovia"></p>
+      <div class="linea-orn my-6 text-acento"><span class="text-xs">❦</span></div>
+      <ul id="padresNovia" class="font-serif text-2xl sm:text-3xl font-light space-y-1"></ul>
+    </div>
+
+    <div class="text-center reveal">
+      <p class="font-serif text-2xl sm:text-3xl italic font-light" data-bind="padres.dedicatoriaNovio"></p>
+      <div class="linea-orn my-6 text-acento"><span class="text-xs">❦</span></div>
+      <ul id="padresNovio" class="font-serif text-2xl sm:text-3xl font-light space-y-1"></ul>
+    </div>
+
+    <!-- Puerta de entrada a la sección de padrinos -->
+    <div class="text-center reveal pt-4">
+      <button id="btnPadrinos" type="button" aria-expanded="false" aria-controls="padrinosPanel"
+              class="group inline-flex items-center gap-4 border border-linea bg-fondo2 px-8 sm:px-10 py-5 hover:border-acento transition-colors duration-500">
+        <span class="text-left">
+          <span class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2">Agradecimiento a mis padrinos</span>
+          <span id="pistaPadrinos" class="block mt-1.5 font-serif text-sm italic text-tinta/55"></span>
+        </span>
+        <span id="chevPadrinos" class="text-2xl leading-none text-acento">⌄</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 3. PADRINOS (colapsable) ══════════ -->
+<section id="seccionPadrinos" class="bg-fondo2" data-efecto="arriba" data-pose="aplauso">
+  <div id="padrinosPanel">
+    <div>
+      <div class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center reveal">
+            <p class="font-serif text-2xl sm:text-3xl italic font-light max-w-2xl mx-auto" data-bind="padrinos.intro"></p>
+            <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
+          </div>
+
+          <div id="padrinos" data-stagger class="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 text-center"></div>
+
+          <div class="mt-16 text-center reveal">
+            <p class="font-serif text-xl sm:text-2xl italic font-light max-w-2xl mx-auto" data-bind="padrinos.abuelos"></p>
+            <ul id="abuelos" class="mt-5 font-serif text-2xl font-light space-y-1"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 4. INVITACIÓN FORMAL + CUENTA REGRESIVA ══════════ -->
+<section id="cuenta" class="relative py-24 bg-hondo overflow-hidden" data-efecto="desplegar" data-pose="reloj">
+  <div class="absolute inset-0 hojas opacity-[0.07]"></div>
+
+  <div class="relative z-10 max-w-3xl mx-auto px-6 text-center text-fondo">
+
+    <div class="reveal">
+      <p class="font-sans text-[10px] tracking-[.45em] uppercase text-suave">Con el corazón lleno</p>
+      <div class="linea-orn my-7 text-acento"><span class="text-xs">❦</span></div>
+      <p class="font-serif text-2xl sm:text-3xl font-light leading-[1.65]" data-bind="invitacionFormal"></p>
+      <p class="mt-8 font-script text-4xl sm:text-5xl text-acento" data-bind="nombres"></p>
+    </div>
+
+    <div class="linea-orn my-14 text-suave/40"><span class="text-xs">◈</span></div>
+
+    <p class="font-sans text-[10px] tracking-[.4em] uppercase text-suave reveal">Falta poco</p>
+
+    <div data-stagger class="mt-8 grid grid-cols-4 gap-3 sm:gap-8">
+      <div><div data-cd="dias"     class="font-serif text-4xl sm:text-6xl font-light text-acento tabular-nums">--</div><p class="mt-2 font-sans text-[9px] tracking-[.3em] uppercase text-suave">Días</p></div>
+      <div><div data-cd="horas"    class="font-serif text-4xl sm:text-6xl font-light text-acento tabular-nums">--</div><p class="mt-2 font-sans text-[9px] tracking-[.3em] uppercase text-suave">Horas</p></div>
+      <div><div data-cd="minutos"  class="font-serif text-4xl sm:text-6xl font-light text-acento tabular-nums">--</div><p class="mt-2 font-sans text-[9px] tracking-[.3em] uppercase text-suave">Minutos</p></div>
+      <div><div data-cd="segundos" class="font-serif text-4xl sm:text-6xl font-light text-acento tabular-nums">--</div><p class="mt-2 font-sans text-[9px] tracking-[.3em] uppercase text-suave">Segundos</p></div>
+    </div>
+
+    <button id="btnCalendario" class="mt-10 border border-fondo/40 px-7 py-3 font-sans text-[10px] tracking-[.3em] uppercase hover:bg-fondo hover:text-hondo transition-colors duration-500 reveal">
+      Agendar en mi calendario
+    </button>
+  </div>
+</section>
+
+<!-- ══════════ 5. ITINERARIO con progreso de scroll ══════════ -->
+<section class="py-24 px-6 bg-fondo" data-efecto="izquierda" data-pose="lista">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center reveal">
+      <h2 class="font-serif text-3xl sm:text-4xl font-light italic">¡Acompáñanos en cada momento de nuestro gran día!</h2>
+      <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
+    </div>
+
+    <!-- La enredadera se dibuja en JS sobre la altura real de la lista -->
+    <div id="itinerarioWrap" class="mt-16 relative pl-9 sm:pl-14">
+      <svg id="enredadera" aria-hidden="true"></svg>
+      <div id="itinerario" class="space-y-14"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 6. VESTIMENTA Y REGALOS ══════════ -->
+<section class="relative py-24 px-6 bg-hondo overflow-hidden" data-efecto="zoom" data-pose="gala">
+  <div class="absolute inset-0 hojas opacity-[0.06]"></div>
+  <div class="relative z-10 max-w-5xl mx-auto text-fondo">
+
+    <div class="text-center reveal">
+      <h2 class="font-serif text-3xl sm:text-4xl font-light">Código de vestimenta &amp; Sugerencia de regalos</h2>
+      <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
+    </div>
+
+    <div class="mt-16 grid lg:grid-cols-2 gap-14">
+      <div class="text-center reveal">
+        <p class="font-script text-6xl text-acento" data-bind="dressCode.titulo"></p>
+        <p class="mt-6 font-serif text-xl font-light leading-relaxed" data-bind="dressCode.nota"></p>
+        <p class="mt-4 text-sm text-suave leading-relaxed" data-bind="dressCode.clima"></p>
+
+        <div id="paleta" class="mt-8 flex justify-center gap-3 flex-wrap"></div>
+
+        <a href="https://www.pinterest.com/search/pins/?q=boda%20hacienda%20formal%20jardin" target="_blank" rel="noopener"
+           class="mt-8 inline-block border border-fondo/40 px-6 py-2.5 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-fondo hover:text-hondo transition-colors duration-500">
+          Ver ideas en Pinterest
+        </a>
+      </div>
+
+      <div id="regalos" data-stagger class="space-y-6"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 7. CEREMONIA Y RECEPCIÓN ══════════ -->
+<section id="evento" class="py-24 sm:py-28 px-6 bg-fondo2" data-efecto="cortina" data-pose="anillos">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="text-center reveal">
+      <p class="font-sans text-[10px] tracking-[.4em] uppercase text-acento2">Dónde y cuándo</p>
+      <h2 class="mt-3 font-serif text-4xl sm:text-5xl font-light">Ceremonia y recepción</h2>
+      <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
+    </div>
+
+    <div id="lugares" data-stagger class="mt-16 grid md:grid-cols-2 gap-10"></div>
+
+    <div class="mt-12 reveal">
+      <div class="aspect-[16/9] sm:aspect-[21/9] bg-fondo border border-linea overflow-hidden">
+        <iframe id="mapa" title="Mapa del lugar" class="w-full h-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <p class="mt-3 text-center text-xs text-tinta/50">Toca el mapa para abrirlo en Google Maps.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ 8. HOSPEDAJE ══════════ -->
+<section class="py-24 px-6 bg-fondo" data-efecto="derecha" data-pose="dormir">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center reveal">
+      <h2 class="font-serif text-4xl sm:text-5xl font-light">Sugerencia de hospedaje</h2>
+      <div class="linea-orn mt-6 mb-8 text-acento"><span class="text-xs">❦</span></div>
+      <p class="max-w-2xl mx-auto font-serif text-xl font-light leading-relaxed" data-bind="hospedaje.intro"></p>
+    </div>
+
+    <div id="hoteles" data-stagger class="mt-14 grid sm:grid-cols-2 gap-8"></div>
+
+    <div class="mt-16 grid sm:grid-cols-2 gap-10 reveal">
+      <div>
+        <p class="font-sans text-[10px] tracking-[.3em] uppercase text-acento2">Cómo llegar</p>
+        <ul id="comoLlegar" class="mt-4 space-y-2.5 text-sm text-tinta/75"></ul>
+      </div>
+      <div>
+        <p class="font-sans text-[10px] tracking-[.3em] uppercase text-acento2">Qué hacer en la zona</p>
+        <ul id="queHacer" class="mt-4 space-y-2.5 text-sm text-tinta/75"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 9. CONFIRMACIÓN ══════════ -->
+<section id="rsvp" class="py-24 px-6 bg-fondo2" data-efecto="enfoque" data-pose="sobre">
+  <div class="max-w-lg mx-auto">
+
+    <div class="text-center reveal">
+      <p class="font-sans text-[10px] tracking-[.4em] uppercase text-acento2">No nos dejes con la duda</p>
+      <h2 class="mt-3 font-serif text-4xl sm:text-5xl font-light">Confirma tu asistencia</h2>
+      <div class="linea-orn mt-6 mb-8 text-acento"><span class="text-xs">❦</span></div>
+      <p class="text-sm text-tinta/70 leading-relaxed">
+        Ingresa el código que viene en tu invitación. Te pedimos confirmar antes del
+        <span class="font-serif text-lg text-acento2" data-bind="rsvp.fechaLimite"></span>.
+      </p>
+    </div>
+
+    <form id="form" class="mt-12 space-y-6 reveal" novalidate>
+      <div>
+        <label for="codigo" class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2 mb-2">Código de invitado</label>
+        <input id="codigo" name="codigo" type="text" placeholder="Ej. VYD-100" autocomplete="off"
+               class="w-full bg-fondo border border-linea px-4 py-3.5 font-serif text-xl text-center tracking-[.2em] uppercase focus:outline-none focus:border-acento transition">
+        <p id="errCodigo" class="hidden mt-2 text-center text-xs text-red-700"></p>
+      </div>
+
+      <div id="bloque" class="hidden space-y-6">
+        <div class="bg-fondo border border-acento/40 p-6 text-center">
+          <p class="font-sans text-[10px] tracking-[.3em] uppercase text-acento2">Invitación para</p>
+          <p id="paseNombre" class="mt-2 font-serif text-2xl"></p>
+          <p id="pasePases" class="mt-1 text-xs text-tinta/60"></p>
+        </div>
+
+        <div>
+          <label for="nombre" class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2 mb-2">Nombre de quien confirma</label>
+          <input id="nombre" name="nombre" type="text" autocomplete="name"
+                 class="w-full bg-fondo border border-linea px-4 py-3.5 font-serif text-lg focus:outline-none focus:border-acento transition">
+          <p class="err hidden mt-2 text-xs text-red-700"></p>
+        </div>
+
+        <div>
+          <label for="asiste" class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2 mb-2">¿Nos acompañas?</label>
+          <select id="asiste" name="asiste"
+                  class="w-full bg-fondo border border-linea px-4 py-3.5 font-serif text-lg focus:outline-none focus:border-acento transition">
+            <option value="">Seleccionar</option>
+            <option value="si">Sí, ahí estaré</option>
+            <option value="no">No podré asistir</option>
+          </select>
+          <p class="err hidden mt-2 text-xs text-red-700"></p>
+        </div>
+
+        <div id="wrapAsistentes">
+          <label for="asistentes" class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2 mb-2">Número de asistentes</label>
+          <select id="asistentes" name="asistentes"
+                  class="w-full bg-fondo border border-linea px-4 py-3.5 font-serif text-lg focus:outline-none focus:border-acento transition"></select>
+        </div>
+
+        <div>
+          <label for="dieta" class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2 mb-2">Restricciones alimenticias</label>
+          <input id="dieta" name="dieta" type="text" placeholder="Vegetariano, sin gluten, ninguna…"
+                 class="w-full bg-fondo border border-linea px-4 py-3.5 font-serif text-lg placeholder:text-tinta/30 focus:outline-none focus:border-acento transition">
+        </div>
+
+        <div>
+          <label for="mensaje" class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2 mb-2">Mensaje para los novios</label>
+          <textarea id="mensaje" name="mensaje" rows="3"
+                    class="w-full bg-fondo border border-linea px-4 py-3.5 font-serif text-lg resize-none focus:outline-none focus:border-acento transition"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-hondo text-fondo py-4 font-sans text-[10px] tracking-[.35em] uppercase hover:bg-hondo2 transition-colors duration-500">
+          Confirmar
+        </button>
+      </div>
+    </form>
+
+    <div id="exito" class="hidden mt-12 text-center border border-acento/50 bg-fondo p-10">
+      <p class="text-4xl text-acento">❦</p>
+      <p id="exitoTitulo" class="mt-4 font-serif text-3xl font-light"></p>
+      <p id="exitoTexto" class="mt-3 text-sm text-tinta/70"></p>
+      <a id="exitoWa" href="#" target="_blank" rel="noopener"
+         class="mt-8 inline-block bg-hondo text-fondo px-8 py-3 font-sans text-[10px] tracking-[.3em] uppercase hover:bg-hondo2 transition-colors duration-500">
+        Avisar por WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 9b. AGRADECIMIENTO ══════════
+     Cierre emocional. Se separa de la confirmación por fondo, textura,
+     ancho de caja, escala tipográfica y un filete superior. -->
+<section id="gracias" class="relative py-32 sm:py-40 px-6 bg-fondo border-t border-linea overflow-hidden" data-efecto="alejar" data-pose="rezar">
+  <div class="absolute inset-0 hojas-tinta opacity-[0.05]"></div>
+
+  <div class="relative z-10 max-w-2xl mx-auto text-center reveal">
+    <p class="font-sans text-[10px] tracking-[.45em] uppercase text-acento2">De corazón</p>
+    <h2 class="mt-4 font-serif text-5xl sm:text-6xl font-light">Gracias</h2>
+    <div class="linea-orn my-8 text-acento"><span class="text-sm">❦</span></div>
+
+    <p class="font-serif text-2xl sm:text-3xl leading-[1.6] font-light text-tinta/85" data-bind="agradecimiento"></p>
+  </div>
+</section>
+
+<!-- ══════════ 10. PIE ══════════ -->
+<!-- Se anima el contenido, no el <footer>: desplazarlo dejaría un hueco al final -->
+<footer data-stagger class="bg-hondo2 text-fondo py-16 px-6 text-center" data-efecto="inclinar" data-pose="adios">
+  <p class="font-script text-5xl" data-bind="nombres"></p>
+  <div class="linea-orn my-7 text-acento"><span class="text-xs">❦</span></div>
+  <p class="font-serif text-lg" data-bind="fechaLarga"></p>
+  <p class="mt-1 font-sans text-[10px] tracking-[.35em] uppercase opacity-70" data-bind="lugarCorto"></p>
+  <p class="mt-10 font-sans text-[10px] tracking-[.25em] uppercase opacity-50" data-bind="hashtag"></p>
+</footer>
+
+<!-- Pétalos que deja caer el puntero -->
+<div id="petalos" aria-hidden="true"></div>
+
+<!-- ══════════ LAS PALOMAS ══════════
+     Dos palomas fijas que cambian de pose según la sección que estés
+     leyendo. Las partes móviles (alas, cabezas) rotan sobre su
+     articulación, así que las poses se encadenan sin cortes. -->
+<div id="novios" aria-hidden="true">
+  <svg viewBox="0 0 130 140" width="100%" height="100%">
+
+    <!-- ───── PALOMA NOVIA (mira al centro) ───── -->
+    <g id="gNovia" class="figura">
+      <!-- ala trasera -->
+      <g class="ala" id="nA" style="transform-origin:44px 72px">
+        <path d="M44 68 C37 76 35 90 38 102 C45 93 48 80 47 70Z" class="ala-forma"/>
+      </g>
+
+      <!-- patas -->
+      <path d="M39 92v9M46 92v9" class="pata"/>
+      <path d="M36 101h6M43 101h6" class="pata"/>
+      <!-- cola -->
+      <path d="M30 74 L12 66 L14 82 L29 87Z" class="cuerpo-forma"/>
+      <!-- cuerpo -->
+      <ellipse cx="42" cy="80" rx="16" ry="12" class="cuerpo-forma"/>
+      <!-- cuello -->
+      <path d="M48 74 C50 66 53 61 56 59 L58 68 C55 71 52 76 51 80Z" class="cuerpo-forma"/>
+
+      <!-- cabeza -->
+      <g class="cabeza" id="nCab" style="transform-origin:52px 66px">
+        <circle cx="56" cy="56" r="8.5" class="cuerpo-forma"/>
+        <path d="M64 55 L71 57.5 L64 60Z" class="pico"/>
+        <circle cx="58.5" cy="53.5" r="1.5" class="ojo"/>
+        <!-- velo -->
+        <path d="M52 48 C44 47 40 54 41 62 C45 56 49 52 54 51Z" class="velo"/>
+        <circle cx="52" cy="47" r="2.6" class="velo-flor"/>
+      </g>
+
+      <!-- ala delantera -->
+      <g class="ala" id="nB" style="transform-origin:44px 72px">
+        <path d="M44 68 C38 77 37 90 40 101 C46 92 49 80 48 70Z" class="ala-forma ala-frente"/>
+      </g>
+    </g>
+
+    <!-- ───── PALOMA NOVIO (mira al centro) ───── -->
+    <g id="gNovio" class="figura">
+      <g class="ala" id="oB" style="transform-origin:86px 72px">
+        <path d="M86 68 C93 76 95 90 92 102 C85 93 82 80 83 70Z" class="ala-forma"/>
+      </g>
+
+      <path d="M91 92v9M84 92v9" class="pata"/>
+      <path d="M94 101h-6M87 101h-6" class="pata"/>
+      <path d="M100 74 L118 66 L116 82 L101 87Z" class="cuerpo-forma"/>
+      <ellipse cx="88" cy="80" rx="16" ry="12" class="cuerpo-forma"/>
+      <path d="M82 74 C80 66 77 61 74 59 L72 68 C75 71 78 76 79 80Z" class="cuerpo-forma"/>
+
+      <g class="cabeza" id="oCab" style="transform-origin:78px 66px">
+        <circle cx="74" cy="56" r="8.5" class="cuerpo-forma"/>
+        <path d="M66 55 L59 57.5 L66 60Z" class="pico"/>
+        <circle cx="71.5" cy="53.5" r="1.5" class="ojo"/>
+        <!-- moño -->
+        <path d="M70 64 L74 66.5 L78 64 L74 61.5Z" class="mono"/>
+      </g>
+
+      <g class="ala" id="oA" style="transform-origin:86px 72px">
+        <path d="M86 68 C92 77 93 90 90 101 C84 92 81 80 82 70Z" class="ala-forma ala-frente"/>
+      </g>
+    </g>
+
+    <!-- capas que cambian con la pose -->
+    <g id="accesorio"></g>
+    <g id="burbuja"></g>
+  </svg>
+</div>
+
+<!-- ══════════ BOTONES FLOTANTES ══════════ -->
+<div class="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+
+  <!-- Panel de paletas -->
+  <div id="panelPaletas" class="oculto bg-fondo border border-linea shadow-2xl p-5 w-[19rem] max-h-[60vh] overflow-y-auto">
+    <p class="font-sans text-[10px] tracking-[.3em] uppercase text-acento2">Paleta de color</p>
+    <p class="mt-1 text-xs text-tinta/55">Elige la que mejor vaya con tu boda.</p>
+    <div id="listaPaletas" class="mt-4 grid grid-cols-3 gap-2.5"></div>
+  </div>
+
+  <a id="wa" href="#" target="_blank" rel="noopener"
+     class="w-14 h-14 rounded-full bg-[#25D366] text-white grid place-items-center shadow-lg hover:scale-105 transition-transform"
+     aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.174.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 016.988 2.896 9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+  </a>
+
+  <button id="btnPaletas" aria-label="Cambiar paleta de color" aria-expanded="false"
+          class="w-14 h-14 rounded-full bg-hondo text-fondo grid place-items-center shadow-lg hover:scale-105 transition-transform">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6">
+      <path d="M12 3a9 9 0 100 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1-.24-.27-.39-.62-.39-1 0-.83.67-1.5 1.5-1.5H16a5 5 0 005-5c0-4.42-4.03-8-9-8z"/>
+      <circle cx="7.5" cy="10.5" r="1.2" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="7.5" r="1.2" fill="currentColor" stroke="none"/>
+      <circle cx="16.5" cy="10.5" r="1.2" fill="currentColor" stroke="none"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PALETAS — 18 combinaciones validadas para contraste accesible.
+   Cada una define los mismos nueve tokens semánticos.
+   ═══════════════════════════════════════════════════════════════ */
+const PALETAS = [
+  { nombre:'Arena', bg:'#FAF8F5', bg2:'#F3EFE8', line:'#E3DCCE', ink:'#2F291D', deep:'#271F11', deep2:'#524328', soft:'#CCBFA8', accent:'#D6AA51', accent2:'#815C13' },
+  { nombre:'Bosque', bg:'#F7F9F6', bg2:'#ECF1E9', line:'#D7E1D0', ink:'#252F1E', deep:'#1B2414', deep2:'#3B4D2D', soft:'#B8C9AB', accent:'#DAB74E', accent2:'#836611' },
+  { nombre:'Olivo', bg:'#F9F9F5', bg2:'#F0F2E9', line:'#DFE3CF', ink:'#2C2F1D', deep:'#222613', deep2:'#49502B', soft:'#C6CCA8', accent:'#D4BA54', accent2:'#7F6A15' },
+  { nombre:'Musgo', bg:'#F7F9F6', bg2:'#EBF1EA', line:'#D5E0D1', ink:'#222E1F', deep:'#182414', deep2:'#364C2F', soft:'#B3C8AC', accent:'#A1C464', accent2:'#557420' },
+  { nombre:'Higo', bg:'#F9F6F7', bg2:'#F0EAEC', line:'#E0D2D6', ink:'#2D1F24', deep:'#23151A', deep2:'#4B3039', soft:'#C7AEB6', accent:'#C46474', accent2:'#74202E' },
+  { nombre:'Vino', bg:'#F9F6F6', bg2:'#F1EAEB', line:'#E0D1D4', ink:'#2E1F21', deep:'#241417', deep2:'#4C2F33', soft:'#C8ACB1', accent:'#CF7659', accent2:'#7B3118' },
+  { nombre:'Rosa seco', bg:'#F9F6F5', bg2:'#F2EAE9', line:'#E3D1CF', ink:'#2F201D', deep:'#261513', deep2:'#50302B', soft:'#CCADA8', accent:'#C16E67', accent2:'#722922' },
+  { nombre:'Mostaza', bg:'#FAF8F5', bg2:'#F3F0E8', line:'#E3DECE', ink:'#2F2B1D', deep:'#282210', deep2:'#544826', soft:'#CCC3A8', accent:'#DDA74B', accent2:'#855A0F' },
+  { nombre:'Terracota', bg:'#FAF6F5', bg2:'#F3EBE8', line:'#E3D4CE', ink:'#2F231D', deep:'#271811', deep2:'#523528', soft:'#CCB3A8', accent:'#D27756', accent2:'#7E3216' },
+  { nombre:'Salvia', bg:'#F6F8F7', bg2:'#EAF0EB', line:'#D3DED5', ink:'#212C22', deep:'#162318', deep2:'#324935', soft:'#B0C4B3', accent:'#86BF69', accent2:'#3D7023' },
+  { nombre:'Índigo', bg:'#F6F7F9', bg2:'#E9EBF1', line:'#D0D5E1', ink:'#1E222F', deep:'#141824', deep2:'#2D354D', soft:'#ABB3C9', accent:'#5E94C9', accent2:'#1C4A78' },
+  { nombre:'Lavanda', bg:'#F8F6F9', bg2:'#EEEAF0', line:'#DAD2E0', ink:'#271F2D', deep:'#1D1523', deep2:'#3F304B', soft:'#BCAEC7', accent:'#A86BBD', accent2:'#5C256F' },
+  { nombre:'Durazno', bg:'#FAF7F5', bg2:'#F3ECE8', line:'#E3D7CE', ink:'#2F251D', deep:'#291A0F', deep2:'#573923', soft:'#CCB7A8', accent:'#DF8049', accent2:'#853A0F' },
+  { nombre:'Eucalipto', bg:'#F6F9F8', bg2:'#EAF0EF', line:'#D2E0DC', ink:'#1F2D2A', deep:'#152320', deep2:'#304B44', soft:'#AEC7C0', accent:'#67C1B9', accent2:'#22726B' },
+  { nombre:'Cacao', bg:'#F9F7F6', bg2:'#F0EDEA', line:'#E0D8D2', ink:'#2D261F', deep:'#231C15', deep2:'#4B3C30', soft:'#C7B9AE', accent:'#C49464', accent2:'#744A20' },
+  { nombre:'Ciruela', bg:'#F9F6F8', bg2:'#F0EAEF', line:'#DFD3DD', ink:'#2C202A', deep:'#231521', deep2:'#493145', soft:'#C5AFC1', accent:'#BF69A2', accent2:'#702357' },
+  { nombre:'Pizarra', bg:'#F6F8F8', bg2:'#EBEEEF', line:'#D4DADD', ink:'#22272B', deep:'#161D22', deep2:'#333F47', soft:'#B2BCC2', accent:'#67A3C1', accent2:'#225772' },
+  { nombre:'Cobre', bg:'#FAF7F5', bg2:'#F3EBE8', line:'#E3D5CE', ink:'#2F231D', deep:'#281810', deep2:'#543526', soft:'#CCB4A8', accent:'#D68751', accent2:'#813F13' },
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   CONFIG
+   ═══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  nombres:    'Valeria & David',
+  fechaISO:   '2027-04-24T17:00:00',
+  fecha:      { dia: 'sábado', numero: '24', mes: 'Abril', anio: '2027' },
+  fechaLarga: '24 de abril de 2027',
+  lugarCorto: 'Huasca de Ocampo · Hidalgo',
+  hashtag:    '#ValeriaYDavid2027',
+
+  frasePortada: '"Contigo aprendí que existen nuevas y mejores emociones. Contigo aprendí a conocer un mundo nuevo de ilusiones"',
+
+  invitacionFormal:
+    'Con la bendición de Dios y de nuestros padres, y con la alegría de quien ha esperado mucho este día, tenemos el honor de invitarte a la celebración de nuestro matrimonio. Nos encantaría tenerte con nosotros para compartir la mesa, el baile y el inicio de esta nueva etapa.',
+
+  agradecimiento:
+    'Gracias por ser parte de nuestra historia. Si estás leyendo esto es porque ocupas un lugar importante en nuestra vida, y no imaginamos este día sin ti. Te esperamos en Hidalgo.',
+
+  padres: {
+    dedicatoriaNovia: 'Gracias a mis padres por guiarme y acompañarme',
+    dedicatoriaNovio: 'Gracias a mis padres por enseñarme el camino',
+  },
+  padresNovia: ['Nombre Apellido Apellido', 'Nombre Apellido Apellido'],
+  padresNovio: ['Nombre Apellido Apellido', 'Nombre Apellido Apellido'],
+
+  padrinos: {
+    intro:   'Juntos para siempre, en compañía de nuestros padres y padrinos',
+    abuelos: 'Abuelos, gracias por ser nuestros segundos padres y ahora nuestros padrinos de bodas',
+    lista: [
+      { rol: 'Padrinos de velación', nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+      { rol: 'Padrinos de lazo',     nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+      { rol: 'Padrinos de anillos',  nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+      { rol: 'Padrinos de arras',    nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+      { rol: 'Padrinos de ramo',     nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+      { rol: 'Padrinos de honor',    nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+    ],
+  },
+  abuelos: ['Nombre Apellido Apellido', 'Nombre Apellido Apellido'],
+
+  itinerario: [
+    { hora: '5:00 pm',  tipo: 'Ceremonia religiosa', lugar: 'Capilla de la hacienda', dir: 'Llega 20 minutos antes, por favor.' },
+    { hora: '6:30 pm',  tipo: 'Ceremonia civil',     lugar: 'Patio de cantera',       dir: 'En la misma hacienda.' },
+    { hora: '7:30 pm',  tipo: 'Cóctel y brindis',    lugar: 'Jardín principal',       dir: 'Canapés y pulque curado de la región.' },
+    { hora: '8:30 pm',  tipo: 'Cena',                lugar: 'Salón principal',        dir: 'Busca tu nombre en el plano de mesas.' },
+    { hora: '9:30 pm',  tipo: 'Primer baile',        lugar: '',                       dir: 'Prometemos que será breve.' },
+    { hora: '10:00 pm', tipo: 'Fiesta',              lugar: '',                       dir: 'Zapatos cómodos altamente recomendados.' },
+    { hora: '12:00 am', tipo: 'Antojito de media noche', lugar: '',                   dir: 'Para aguantar el segundo aire.' },
+    { hora: '2:00 am',  tipo: 'Cierre',              lugar: '',                       dir: 'Tornaboda para los últimos sobrevivientes.' },
+  ],
+
+  lugares: [
+    { tipo: 'Ceremonia religiosa', nombre: 'Capilla de la hacienda', icono: '⛪', hora: '17:00 h',
+      direccion: 'Carretera Huasca–San Miguel Regla km 4, Huasca de Ocampo, Hgo.',
+      maps: 'https://maps.google.com/?q=Huasca+de+Ocampo+Hidalgo' },
+    { tipo: 'Recepción', nombre: 'Jardín y patio central', icono: '❦', hora: '19:00 h',
+      direccion: 'En la misma hacienda — no necesitas moverte',
+      maps: 'https://maps.google.com/?q=Huasca+de+Ocampo+Hidalgo' },
+  ],
+  mapaEmbed: 'https://www.google.com/maps?q=Huasca+de+Ocampo,+Hidalgo&output=embed',
+
+  dressCode: {
+    titulo: 'Formal',
+    nota:   'Te pedimos amablemente reservar el color blanco para la novia.',
+    clima:  'Estamos a más de 2,000 metros de altura: de día hace calor, pero en la noche baja a unos 10 °C. Trae abrigo o chal. Para ellas, tacón de bloque — hay empedrado y pasto.',
+    paleta: [
+      { nombre: 'Arena',        hex: '#E8DFC9' },
+      { nombre: 'Maíz',         hex: '#E3B23C' },
+      { nombre: 'Ocre',         hex: '#A5761A' },
+      { nombre: 'Verde encino', hex: '#5F7F4B' },
+      { nombre: 'Bosque',       hex: '#3D5730' },
+    ],
+  },
+
+  regalos: [
+    { titulo: 'Amazon',    lineas: ['Boda Valeria & David'],       cta: 'Ver regalos', url: 'https://www.amazon.com.mx/wedding/' },
+    { titulo: 'Liverpool', lineas: ['Código del evento: 5438990'], cta: 'Ver regalos', url: 'https://mesaderegalos.liverpool.com.mx/' },
+    { titulo: 'Lluvia de sobres', lineas: ['Nombre Apellido Apellido', 'BBVA · Cuenta: 1234567890', 'CLABE: 012 180 00000000000 0'], cta: '', url: '' },
+  ],
+
+  hospedaje: {
+    intro: 'Gracias por tomarte el tiempo de venir a nuestra boda desde tu ciudad. Seleccionamos algunos lugares para que puedas estar cerca del evento.',
+    hoteles: [
+      { nombre: 'Hotel Hacienda sede', dir: 'En el mismo lugar del evento · cupo limitado', precio: 'desde $2,600 MXN', cta: 'Cotizar hotel', url: '#' },
+      { nombre: 'Cabañas en Huasca',   dir: 'Centro del Pueblo Mágico · 10 min del evento', precio: 'desde $1,500 MXN', cta: 'Cotizar hotel', url: '#' },
+    ],
+    comoLlegar: [
+      'Desde CDMX en auto: 1 h 45 min por la México–Pachuca.',
+      'Avión: AIFA (NLU) a 1 h 15 min · AICM a 2 h.',
+      'Autobús: ADO a la Central de Pachuca y 45 min a Huasca.',
+      'Estacionamiento gratuito en la hacienda.',
+    ],
+    queHacer: [
+      'Prismas Basálticos de Santa María Regla, a 15 min.',
+      'Real del Monte: los pastes son obligatorios.',
+      'Mineral del Chico y su bosque de niebla.',
+      'Las ex haciendas pulqueras de la zona.',
+    ],
+  },
+
+  rsvp: {
+    fechaLimite: '28 de febrero de 2027',
+    whatsapp: '5215500000000',
+    endpoint: '',
+    invitados: [
+      { codigo: 'VYD-100', nombre: 'Familia Ramírez Soto', pases: 4 },
+      { codigo: 'VYD-101', nombre: 'Ana Gutiérrez',        pases: 2 },
+      { codigo: 'VYD-102', nombre: 'Luis Herrera',         pases: 1 },
+      { codigo: 'VYD-103', nombre: 'Familia Andrade',      pases: 5 },
+    ],
+  },
+};
+
+/* ═══════════ Utilidades ═══════════ */
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const get = p => p.split('.').reduce((o, k) => (o ?? {})[k], CONFIG);
+
+$$('[data-bind]').forEach(el => {
+  const v = get(el.dataset.bind);
+  if (v != null) el.textContent = v;
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   Selector de paletas
+   Tailwind lee los colores como "rgb(var(--c-x))", así que basta
+   reescribir las variables para que todo el sitio cambie.
+   ═══════════════════════════════════════════════════════════════ */
+const aRgb = hex => {
+  const h = hex.replace('#', '');
+  return `${parseInt(h.slice(0,2),16)} ${parseInt(h.slice(2,4),16)} ${parseInt(h.slice(4,6),16)}`;
+};
+
+function aplicarPaleta(i) {
+  const p = PALETAS[i];
+  if (!p) return;
+  const r = document.documentElement.style;
+  r.setProperty('--c-bg',      aRgb(p.bg));
+  r.setProperty('--c-bg2',     aRgb(p.bg2));
+  r.setProperty('--c-line',    aRgb(p.line));
+  r.setProperty('--c-ink',     aRgb(p.ink));
+  r.setProperty('--c-deep',    aRgb(p.deep));
+  r.setProperty('--c-deep2',   aRgb(p.deep2));
+  r.setProperty('--c-soft',    aRgb(p.soft));
+  r.setProperty('--c-accent',  aRgb(p.accent));
+  r.setProperty('--c-accent2', aRgb(p.accent2));
+
+  $$('#listaPaletas button').forEach((b, j) => {
+    b.setAttribute('aria-pressed', j === i);
+    b.classList.toggle('ring-2', j === i);
+    b.classList.toggle('ring-offset-2', j === i);
+  });
+
+  localStorage.setItem('paleta', i);
+}
+
+$('#listaPaletas').innerHTML = PALETAS.map((p, i) => `
+  <button type="button" data-p="${i}" aria-pressed="false" title="${p.nombre}"
+          class="group flex flex-col items-center gap-1.5 p-1.5 ring-acento ring-offset-fondo rounded transition">
+    <span class="flex w-full h-8 overflow-hidden rounded-sm border border-black/10">
+      <span class="flex-1" style="background:${p.deep}"></span>
+      <span class="flex-1" style="background:${p.accent}"></span>
+      <span class="flex-1" style="background:${p.bg2}"></span>
+    </span>
+    <span class="font-sans text-[9px] leading-tight text-center text-tinta/70">${p.nombre}</span>
+  </button>
+`).join('');
+
+$$('#listaPaletas button').forEach(b =>
+  b.addEventListener('click', () => aplicarPaleta(+b.dataset.p)));
+
+// Arranca en Arena, o en la última elegida
+aplicarPaleta(Number(localStorage.getItem('paleta') ?? 0));
+
+const panel = $('#panelPaletas');
+$('#btnPaletas').addEventListener('click', () => {
+  const abierto = panel.classList.toggle('oculto');
+  $('#btnPaletas').setAttribute('aria-expanded', String(!abierto));
+});
+document.addEventListener('click', e => {
+  if (!panel.contains(e.target) && !$('#btnPaletas').contains(e.target)) panel.classList.add('oculto');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') panel.classList.add('oculto'); });
+
+/* ═══════════ Cuenta regresiva ═══════════ */
+const fecha = new Date(CONFIG.fechaISO);
+function tick() {
+  const falta = fecha - Date.now();
+  if (falta <= 0) { $$('[data-cd]').forEach(e => e.textContent = '0'); clearInterval(iv); return; }
+  const s = Math.floor(falta / 1000);
+  const set = (k, v) => $(`[data-cd="${k}"]`).textContent = String(v).padStart(2, '0');
+  set('dias', Math.floor(s / 86400));
+  set('horas', Math.floor(s / 3600) % 24);
+  set('minutos', Math.floor(s / 60) % 60);
+  set('segundos', s % 60);
+}
+const iv = setInterval(tick, 1000); tick();
+
+$('#btnCalendario').addEventListener('click', () => {
+  const f = d => d.toISOString().replace(/[-:]|\.\d{3}/g, '');
+  const l = CONFIG.lugares[0];
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Boda//ES','BEGIN:VEVENT',
+    `UID:${Date.now()}@boda`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(fecha)}`,
+    `DTEND:${f(new Date(fecha.getTime() + 9 * 3600e3))}`,
+    `SUMMARY:Boda de ${CONFIG.nombres}`, `LOCATION:${l.nombre}, ${l.direccion}`,
+    'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })), download: 'boda.ics' });
+  a.click(); URL.revokeObjectURL(a.href);
+});
+
+/* ═══════════ Contenido ═══════════ */
+const lista = arr => arr.map(n => `<li>${n}</li>`).join('');
+$('#padresNovia').innerHTML = lista(CONFIG.padresNovia);
+$('#padresNovio').innerHTML = lista(CONFIG.padresNovio);
+$('#abuelos').innerHTML     = lista(CONFIG.abuelos);
+
+$('#padrinos').innerHTML = CONFIG.padrinos.lista.map(p => `
+  <div>
+    <p class="font-sans text-[10px] tracking-[.3em] uppercase text-acento2">${p.rol}</p>
+    <div class="linea-orn my-4 text-linea"><span class="text-[10px]">◈</span></div>
+    ${p.nombres.map(n => `<p class="font-serif text-xl font-light">${n}</p>`).join('')}
+  </div>
+`).join('');
+
+// Itinerario: cada momento florece en la enredadera
+$('#itinerario').innerHTML = CONFIG.itinerario.map(i => `
+  <div class="it-item relative">
+    <div class="pl-6 sm:pl-8">
+      <p class="font-script text-4xl sm:text-5xl text-acento2 leading-none">${i.hora}</p>
+      <p class="mt-3 font-sans text-[10px] tracking-[.3em] uppercase text-tinta/60">${i.tipo}</p>
+      ${i.lugar ? `<p class="mt-2 font-serif text-2xl font-light">${i.lugar}</p>` : ''}
+      <p class="mt-1 text-sm text-tinta/65 leading-relaxed">${i.dir}</p>
+    </div>
+  </div>
+`).join('');
+
+$('#lugares').innerHTML = CONFIG.lugares.map(l => `
+  <article class="bg-fondo border border-linea overflow-hidden reveal">
+    <div class="h-1.5 bg-acento"></div>
+    <div class="p-10 text-center">
+      <p class="text-3xl text-acento">${l.icono}</p>
+      <p class="mt-4 font-sans text-[10px] tracking-[.3em] uppercase text-acento2">${l.tipo}</p>
+      <h3 class="mt-3 font-serif text-3xl font-light">${l.nombre}</h3>
+      <p class="mt-3 text-sm text-tinta/70 leading-relaxed">${l.direccion}</p>
+      <p class="mt-4 font-serif text-2xl text-acento2">${l.hora}</p>
+      <a href="${l.maps}" target="_blank" rel="noopener"
+         class="mt-6 inline-block border border-acento2 text-acento2 px-6 py-2.5 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-acento2 hover:text-fondo transition-colors duration-500">
+        Cómo llegar
+      </a>
+    </div>
+  </article>
+`).join('');
+
+$('#mapa').src = CONFIG.mapaEmbed;
+
+$('#paleta').innerHTML = CONFIG.dressCode.paleta.map(c => `
+  <div class="text-center">
+    <span class="block w-11 h-11 rounded-full border border-fondo/30" style="background:${c.hex}"></span>
+    <span class="mt-2 block font-sans text-[9px] tracking-wider uppercase text-suave">${c.nombre}</span>
+  </div>
+`).join('');
+
+$('#regalos').innerHTML = CONFIG.regalos.map(r => `
+  <div class="border border-fondo/25 p-7 text-center">
+    <p class="font-serif text-2xl font-light">${r.titulo}</p>
+    <div class="linea-orn my-4 text-acento"><span class="text-[10px]">◈</span></div>
+    ${r.lineas.map(l => `<p class="text-sm text-suave leading-relaxed">${l}</p>`).join('')}
+    ${r.cta ? `<a href="${r.url}" target="_blank" rel="noopener"
+      class="mt-5 inline-block border border-fondo/40 px-6 py-2 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-fondo hover:text-hondo transition-colors duration-500">${r.cta}</a>` : ''}
+  </div>
+`).join('');
+
+$('#hoteles').innerHTML = CONFIG.hospedaje.hoteles.map(h => `
+  <div class="bg-fondo2 border border-linea p-9 text-center reveal">
+    <p class="font-serif text-2xl font-light">${h.nombre}</p>
+    <p class="mt-3 text-sm text-tinta/65 leading-relaxed">${h.dir}</p>
+    <p class="mt-4 font-serif text-xl text-acento2">${h.precio}</p>
+    <a href="${h.url}" target="_blank" rel="noopener"
+       class="mt-6 inline-block border border-acento2 text-acento2 px-6 py-2.5 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-acento2 hover:text-fondo transition-colors duration-500">${h.cta}</a>
+  </div>
+`).join('');
+
+const bullets = arr => arr.map(t => `<li><span class="text-acento">◈</span> ${t}</li>`).join('');
+$('#comoLlegar').innerHTML = bullets(CONFIG.hospedaje.comoLlegar);
+$('#queHacer').innerHTML   = bullets(CONFIG.hospedaje.queHacer);
+
+/* ═══════════════════════════════════════════════════════════════
+   Collapse de padrinos
+   El botón anuncia cuánto hay dentro: un collapse sin pista de su
+   contenido se abre mucho menos. Se despliega solo al imprimir y
+   cuando alguien llega con el enlace directo #padrinos.
+   ═══════════════════════════════════════════════════════════════ */
+const panelPadrinos = $('#padrinosPanel');
+const btnPadrinos   = $('#btnPadrinos');
+
+// Pista de contenido, calculada de los datos reales
+const nPadrinos = CONFIG.padrinos.lista.length;
+$('#pistaPadrinos').textContent =
+  `${nPadrinos} padrinos${CONFIG.abuelos.length ? ' y nuestros abuelos' : ''}`;
+
+function abrirPadrinos(hacerScroll = true) {
+  panelPadrinos.classList.add('abierto');
+  btnPadrinos.setAttribute('aria-expanded', 'true');
+
+  if (!hacerScroll) return;
+  const suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Espera a que la altura termine de animar para no perseguir un blanco móvil
+  setTimeout(() => $('#seccionPadrinos').scrollIntoView({
+    behavior: suave ? 'smooth' : 'auto', block: 'start' }), 380);
+}
+
+function cerrarPadrinos() {
+  panelPadrinos.classList.remove('abierto');
+  btnPadrinos.setAttribute('aria-expanded', 'false');
+  btnPadrinos.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+btnPadrinos.addEventListener('click', () =>
+  panelPadrinos.classList.contains('abierto') ? cerrarPadrinos() : abrirPadrinos());
+
+// Enlace directo: boda4.html#padrinos llega con la sección abierta
+if (location.hash === '#padrinos') abrirPadrinos(false);
+
+// Al imprimir o guardar como PDF, que nada quede oculto
+window.addEventListener('beforeprint', () => panelPadrinos.classList.add('abierto'));
+
+/* ═══════════════════════════════════════════════════════════════
+   Progreso de scroll del itinerario
+   La barra crece según cuánto de la lista queda por encima de la
+   línea de lectura (el 55% de la altura de pantalla), y cada punto
+   se enciende al cruzarla.
+   ═══════════════════════════════════════════════════════════════ */
+const wrap  = $('#itinerarioWrap');
+const svgEnr = $('#enredadera');
+let items = [], hojas = [], flores = [], tallo = null, largoTallo = 0, altoEnr = 0;
+
+const SVG = 'http://www.w3.org/2000/svg';
+const crear = (tag, attrs = {}) => {
+  const el = document.createElementNS(SVG, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+};
+
+// El tallo serpentea alrededor de EJE_X; la amplitud se queda corta
+// a propósito para no invadir el texto en pantallas chicas.
+const EJE_X = 11, AMPLITUD = 5, ANCHO_SVG = 34;
+
+const xEnY = (y, alto) => EJE_X + Math.sin((y / alto) * Math.PI * 2 * (alto / 200)) * AMPLITUD;
+
+/** Dibuja la enredadera completa a la altura actual de la lista */
+function construirEnredadera() {
+  const alto = wrap.offsetHeight;
+  if (!alto) return;
+  altoEnr = alto;
+
+  svgEnr.setAttribute('width', ANCHO_SVG);
+  svgEnr.setAttribute('height', alto);
+  svgEnr.setAttribute('viewBox', `0 0 ${ANCHO_SVG} ${alto}`);
+  svgEnr.innerHTML = '';
+
+  // ── Trazado del tallo
+  const pasos = Math.max(30, Math.round(alto / 10));
+  let d = `M ${EJE_X} 0`;
+  for (let i = 1; i <= pasos; i++) {
+    const y = (i / pasos) * alto;
+    d += ` L ${xEnY(y, alto).toFixed(2)} ${y.toFixed(2)}`;
+  }
+
+  svgEnr.appendChild(crear('path', { class: 'tallo-guia', d }));
+  tallo = crear('path', { class: 'tallo-activo', d });
+  svgEnr.appendChild(tallo);
+
+  largoTallo = tallo.getTotalLength();
+  tallo.style.strokeDasharray  = largoTallo;
+  tallo.style.strokeDashoffset = largoTallo;
+
+  // ── Posición vertical de cada momento del itinerario
+  const topWrap = wrap.getBoundingClientRect().top;
+  items = $$('.it-item');
+  const marcas = items.map(it =>
+    it.getBoundingClientRect().top - topWrap + 22); // 22px ≈ altura de la hora
+
+  // ── Hojas intermedias, alternando lados y evitando las flores
+  hojas = [];
+  const separacion = 58;
+  for (let y = 34; y < alto - 20; y += separacion) {
+    if (marcas.some(m => Math.abs(m - y) < 34)) continue;
+
+    const lado  = hojas.length % 2 ? -1 : 1;
+    const x     = xEnY(y, alto);
+    const giro  = lado > 0 ? -28 : 208;
+    const g     = crear('g', { transform: `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${giro})` });
+    const hoja  = crear('path', {
+      class: 'hoja',
+      d: 'M0 0 C 5 -5.5, 12 -4.5, 15 0 C 12 4.5, 5 5.5, 0 0 Z',
+    });
+    g.appendChild(hoja);
+    svgEnr.appendChild(g);
+    hojas.push({ el: hoja, y });
+  }
+
+  // ── Una flor por cada momento del itinerario
+  flores = [];
+  marcas.forEach((y, i) => {
+    const x = xEnY(y, alto);
+    const g = crear('g', {
+      class: 'flor',
+      transform: `translate(${x.toFixed(2)} ${y.toFixed(2)})`,
+    });
+
+    // El último momento (el cierre) queda como capullo sin abrir
+    if (i === marcas.length - 1) {
+      g.appendChild(crear('circle', { class: 'capullo', r: 4.5 }));
+      g.appendChild(crear('circle', { class: 'petalo',  r: 2 }));
+    } else {
+      for (let p = 0; p < 5; p++) {
+        g.appendChild(crear('ellipse', {
+          class: 'petalo', rx: 2.4, ry: 3.8, cx: 0, cy: -3.6,
+          transform: `rotate(${p * 72})`,
+        }));
+      }
+      g.appendChild(crear('circle', { class: 'centro', r: 1.9 }));
+    }
+
+    svgEnr.appendChild(g);
+    flores.push({ el: g, y });
+  });
+
+  actualizarEnredadera();
+}
+
+/** Ajusta el crecimiento según dónde va la lectura */
+function actualizarEnredadera() {
+  if (!tallo) return;
+
+  const caja  = wrap.getBoundingClientRect();
+  const linea = window.innerHeight * 0.55;
+  const avance = Math.min(Math.max(linea - caja.top, 0), caja.height);
+
+  tallo.style.strokeDashoffset = largoTallo * (1 - avance / (altoEnr || 1));
+
+  hojas.forEach(h  => h.el.classList.toggle('brotada',  h.y <= avance));
+  flores.forEach(f => f.el.classList.toggle('brotada',  f.y <= avance));
+  items.forEach(it => {
+    const p = it.getBoundingClientRect();
+    it.classList.toggle('activo', (p.top + 16) <= linea);
+  });
+}
+
+let esperando = false;
+window.addEventListener('scroll', () => {
+  if (esperando) return;
+  esperando = true;
+  requestAnimationFrame(() => { actualizarEnredadera(); esperando = false; });
+}, { passive: true });
+
+let temporizador;
+window.addEventListener('resize', () => {
+  clearTimeout(temporizador);
+  temporizador = setTimeout(construirEnredadera, 180);
+});
+
+construirEnredadera();
+// Las tipografías cambian la altura de la lista al terminar de cargar
+if (document.fonts?.ready) document.fonts.ready.then(construirEnredadera);
+
+/* ═══════════ Confirmación con código ═══════════ */
+const form = $('#form');
+let invitadoActual = null;
+
+const codigoURL = new URLSearchParams(location.search).get('codigo');
+if (codigoURL) $('#codigo').value = codigoURL.toUpperCase().slice(0, 12);
+
+const buscar = c => CONFIG.rsvp.invitados
+  .find(i => i.codigo.toUpperCase() === c.trim().toUpperCase());
+
+function validarCodigo() {
+  const inv = buscar($('#codigo').value);
+  const err = $('#errCodigo');
+
+  if (!inv) {
+    invitadoActual = null;
+    $('#bloque').classList.add('hidden');
+    if ($('#codigo').value.trim()) {
+      err.textContent = 'Código no encontrado. Revísalo o escríbenos por WhatsApp.';
+      err.classList.remove('hidden');
+    } else err.classList.add('hidden');
+    return;
+  }
+
+  invitadoActual = inv;
+  err.classList.add('hidden');
+  $('#bloque').classList.remove('hidden');
+  $('#paseNombre').textContent = inv.nombre;
+  $('#pasePases').textContent  = inv.pases === 1
+    ? 'Tenemos 1 lugar reservado' : `Tenemos ${inv.pases} lugares reservados`;
+  $('#nombre').value = inv.nombre;
+  $('#asistentes').innerHTML = Array.from({ length: inv.pases }, (_, i) =>
+    `<option value="${i + 1}">${i + 1} ${i === 0 ? 'persona' : 'personas'}</option>`).join('');
+}
+
+$('#codigo').addEventListener('input', validarCodigo);
+if (codigoURL) validarCodigo();
+
+$('#asiste').addEventListener('change', e => {
+  $('#wrapAsistentes').classList.toggle('hidden', e.target.value === 'no');
+});
+
+const marcarError = (el, msg) => {
+  const p = el.parentElement.querySelector('.err');
+  if (!p) return;
+  p.textContent = msg;
+  p.classList.toggle('hidden', !msg);
+};
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!invitadoActual) { validarCodigo(); return; }
+
+  let ok = true;
+  if ($('#nombre').value.trim().length < 3) { marcarError($('#nombre'), 'Escribe tu nombre.'); ok = false; }
+  else marcarError($('#nombre'), '');
+  if (!$('#asiste').value) { marcarError($('#asiste'), 'Elige una opción.'); ok = false; }
+  else marcarError($('#asiste'), '');
+  if (!ok) return;
+
+  const asiste = $('#asiste').value === 'si';
+  const datos = {
+    codigo: invitadoActual.codigo,
+    invitado: invitadoActual.nombre,
+    nombre: $('#nombre').value.trim(),
+    asiste: $('#asiste').value,
+    asistentes: asiste ? $('#asistentes').value : 0,
+    dieta: $('#dieta').value.trim(),
+    mensaje: $('#mensaje').value.trim(),
+    enviadoEn: new Date().toISOString(),
+  };
+
+  if (CONFIG.rsvp.endpoint) {
+    try {
+      await fetch(CONFIG.rsvp.endpoint, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+    } catch (err) { console.warn('Sin conexión con el servidor, queda el respaldo por WhatsApp.', err); }
+  } else {
+    const prev = JSON.parse(localStorage.getItem('rsvp4') || '[]');
+    prev.push(datos); localStorage.setItem('rsvp4', JSON.stringify(prev));
+    console.log('Confirmación registrada (boceto):', datos);
+  }
+
+  $('#exitoTitulo').textContent = asiste ? '¡Nos vemos en Hidalgo!' : 'Gracias por avisarnos';
+  $('#exitoTexto').textContent  = asiste
+    ? `Guardamos ${datos.asistentes} lugar${datos.asistentes > 1 ? 'es' : ''} a nombre de ${invitadoActual.nombre}.`
+    : 'Lamentamos que no puedas acompañarnos. Te mandaremos fotos.';
+
+  const msg = [`Hola! Confirmo para la boda de ${CONFIG.nombres}`, '',
+    `Código: ${datos.codigo}`, `Nombre: ${datos.nombre}`,
+    `Asiste: ${asiste ? 'Sí' : 'No'}`, asiste ? `Personas: ${datos.asistentes}` : '',
+    datos.dieta ? `Dieta: ${datos.dieta}` : '',
+    datos.mensaje ? `Mensaje: ${datos.mensaje}` : ''].filter(Boolean).join('\n');
+  $('#exitoWa').href = `https://wa.me/${CONFIG.rsvp.whatsapp}?text=${encodeURIComponent(msg)}`;
+
+  form.classList.add('hidden');
+  $('#exito').classList.remove('hidden');
+});
+
+$('#wa').href = `https://wa.me/${CONFIG.rsvp.whatsapp}?text=${
+  encodeURIComponent(`Hola! Te escribo por la boda de ${CONFIG.nombres}`)}`;
+
+/* ═══════════════════════════════════════════════════════════════
+   Los novios y sus poses
+   Cada pose define el giro de las alas (nA/nB = paloma novia,
+   oA/oB = paloma novio), la inclinación de las cabezas, cuánto se
+   acercan, y un accesorio o burbuja opcional. 0° = ala recogida.
+   ═══════════════════════════════════════════════════════════════ */
+const POSES = {
+  // Portada: agitan las alas a modo de saludo
+  saludo:    { nA:-150, nB: -18, oA:  18, oB: 150, acc:'', bur:'' },
+
+  // Padres: se acercan y aparece un corazón entre los picos
+  abrazo:    { nA:  14, nB:  92, oA: -92, oB: -14, junta: 6,
+               acc:'<path d="M65 56 c-4-6-12-4-12 3 0 6 8 10 12 14 4-4 12-8 12-14 0-7-8-9-12-3Z" fill="rgb(var(--c-accent))"/>' },
+
+  // Padrinos: baten las alas
+  aplauso:   { nA: -52, nB: -26, oA:  26, oB:  52,
+               bur:'<g fill="rgb(var(--c-accent))"><path d="M65 14l2.4 5 5.4.8-3.9 3.8 1 5.4-4.9-2.6-4.9 2.6 1-5.4-3.9-3.8 5.4-.8Z"/></g>' },
+
+  // Invitación y cuenta regresiva: el reloj flota entre las dos
+  reloj:     { nA:  12, nB: -34, oA:  34, oB: -12,
+               acc:'<g transform="translate(65,26)"><circle r="8.5" fill="#FDFBF7" stroke="rgb(var(--c-accent2))" stroke-width="2.2"/>' +
+                   '<path d="M0-5V0l3.5 2.5" stroke="rgb(var(--c-accent2))" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>' },
+
+  // Itinerario: consultan el programa del día
+  lista:     { nA:  16, nB: -44, oA:  22, oB: -16,
+               acc:'<g transform="translate(65,28) rotate(-6)"><rect x="-10" y="-12" width="20" height="25" rx="2" fill="#FDFBF7" stroke="rgb(var(--c-line))" stroke-width="1.6"/>' +
+                   '<g stroke="rgb(var(--c-accent2))" stroke-width="1.6" stroke-linecap="round"><path d="M-5.5-6h11M-5.5 0h11M-5.5 6h7"/></g></g>' },
+
+  // Vestimenta y regalos: despliegan las alas, con el regalo a los pies
+  gala:      { nA: -46, nB:  30, oA: -30, oB:  46,
+               acc:'<g transform="translate(65,112)"><rect x="-11" y="-10" width="22" height="20" rx="2" fill="rgb(var(--c-accent))"/>' +
+                   '<path d="M-11-2h22M0-10v20" stroke="#FDFBF7" stroke-width="2.6"/></g>' },
+
+  // Ceremonia: las alas se tocan y brillan los anillos
+  anillos:   { nA:  12, nB:  84, oA: -84, oB: -12, junta: 4,
+               acc:'<g transform="translate(65,86)"><circle r="5.5" fill="none" stroke="rgb(var(--c-accent))" stroke-width="2.4"/>' +
+                   '<path d="M0-12l1.8 3.8 3.8.6-2.8 2.7.7 3.8L0-3l-3.5 1.8.7-3.8-2.8-2.7 3.8-.6Z" fill="rgb(var(--c-accent))"/></g>' },
+
+  // Hospedaje: dormidas, con la cabeza hundida
+  dormir:    { nA:   8, nB:   4, oA:  -4, oB:  -8, nCab: 22, oCab: -22,
+               bur:'<g fill="rgb(var(--c-accent2))" font-family="Montserrat, sans-serif" font-weight="500">' +
+                   '<text x="58" y="20" font-size="10">z</text><text x="67" y="11" font-size="13">Z</text></g>' },
+
+  // Confirmación: palomas mensajeras, el sobre va con ellas
+  sobre:     { nA: -74, nB: -34, oA:  34, oB:  74,
+               acc:'<g transform="translate(65,24)"><rect x="-11" y="-8" width="22" height="16" rx="1.5" fill="#FDFBF7" stroke="rgb(var(--c-accent2))" stroke-width="1.7"/>' +
+                   '<path d="M-11-8l11 8.5 11-8.5" fill="none" stroke="rgb(var(--c-accent2))" stroke-width="1.7"/></g>' },
+
+  // Gracias: alas juntas y cabezas inclinadas
+  rezar:     { nA:  10, nB:  68, oA: -68, oB: -10, nCab: 10, oCab: -10, junta: 3,
+               bur:'<path d="M65 12c-3-4-9-3-9 2 0 4 6 7 9 10 3-3 9-6 9-10 0-5-6-6-9-2Z" fill="rgb(var(--c-accent))" opacity=".85"/>' },
+
+  // Pie: se despiden alzando el vuelo
+  adios:     { nA:-158, nB: -40, oA:  40, oB: 158,
+               bur:'<g fill="rgb(var(--c-accent))"><circle cx="58" cy="18" r="2.6"/><circle cx="66" cy="12" r="2.1"/><circle cx="74" cy="17" r="1.7"/></g>' },
+};
+
+(function novios() {
+  const caja = $('#novios');
+  if (!caja) return;
+
+  const partes = { nA: $('#nA'), nB: $('#nB'), oA: $('#oA'), oB: $('#oB') };
+  const cabezas = { nCab: $('#nCab'), oCab: $('#oCab') };
+  const figuras = { novia: $('#gNovia'), novio: $('#gNovio') };
+  const capaAcc = $('#accesorio'), capaBur = $('#burbuja');
+
+  let actual = null;
+
+  function poner(nombre) {
+    const p = POSES[nombre];
+    if (!p || nombre === actual) return;
+    actual = nombre;
+
+    for (const k in partes) partes[k].style.transform = `rotate(${p[k] || 0}deg)`;
+    cabezas.nCab.style.transform = `rotate(${p.nCab || 0}deg)`;
+    cabezas.oCab.style.transform = `rotate(${p.oCab || 0}deg)`;
+
+    caja.classList.toggle('durmiendo', nombre === 'dormir');
+
+    // Se acercan un poco en las poses de contacto
+    const j = p.junta || 0;
+    figuras.novia.style.transform = `translateX(${j}px)`;
+    figuras.novio.style.transform = `translateX(${-j}px)`;
+
+    // Accesorio y burbuja, con un pop al entrar
+    [[capaAcc, p.acc], [capaBur, p.bur]].forEach(([capa, html]) => {
+      capa.innerHTML = html || '';
+      capa.classList.remove('pop');
+      if (html) { void capa.offsetWidth; capa.classList.add('pop'); }
+    });
+  }
+
+  // La sección que cruza el centro de la pantalla manda
+  const vigia = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) poner(e.target.dataset.pose); });
+  }, { rootMargin: '-48% 0px -48% 0px', threshold: 0 });
+
+  $$('[data-pose]').forEach(s => vigia.observe(s));
+  poner('saludo');
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   Lluvia de pétalos tras el puntero
+   Se activa solo con puntero fino y sin reduced-motion. Cada pétalo
+   cae con deriva lateral y giro propios, y se retira solo al acabar.
+   ═══════════════════════════════════════════════════════════════ */
+(function petalos() {
+  const finoYAnimado = window.matchMedia('(pointer: fine)').matches &&
+                       !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!finoYAnimado) return;
+
+  const capa = $('#petalos');
+  const MAX  = 34;          // pétalos vivos a la vez
+  const PASO = 22;          // distancia mínima recorrida entre pétalos
+  let vivos = 0, ultimoX = 0, ultimoY = 0, listo = 0;
+
+  // Tres siluetas: pétalo, hoja y florecilla de cinco pétalos
+  const FORMAS = [
+    '<path d="M9 0C13 5 13 13 9 18 5 13 5 5 9 0Z"/>',
+    '<path d="M1 9C6 3 13 3 17 6 12 12 5 13 1 9Z"/>',
+    '<g><circle cx="9" cy="4.6" r="3.1"/><circle cx="13.4" cy="7.8" r="3.1"/>' +
+      '<circle cx="11.7" cy="13" r="3.1"/><circle cx="6.3" cy="13" r="3.1"/>' +
+      '<circle cx="4.6" cy="7.8" r="3.1"/></g>',
+  ];
+
+  // El color sale del tema, así el rastro combina con la paleta activa
+  const tonos = () => {
+    const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    return [`rgb(${v('--c-accent')})`, `rgb(${v('--c-accent')})`, `rgb(${v('--c-accent2')})`];
+  };
+
+  const azar = (a, b) => a + Math.random() * (b - a);
+
+  function soltar(x, y) {
+    if (vivos >= MAX) return;
+    vivos++;
+
+    const paleta = tonos();
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('viewBox', '0 0 18 18');
+    const tam = azar(9, 17);
+    svg.setAttribute('width', tam);
+    svg.setAttribute('height', tam);
+    svg.style.left = (x - tam / 2) + 'px';
+    svg.style.top  = (y - tam / 2) + 'px';
+    svg.style.color = paleta[(Math.random() * paleta.length) | 0];
+    svg.innerHTML = `<g fill="currentColor">${FORMAS[(Math.random() * FORMAS.length) | 0]}</g>`;
+    capa.appendChild(svg);
+
+    const caida  = azar(90, 190);          // cuánto baja
+    const deriva = azar(-46, 46);          // hacia dónde se va
+    const giro   = azar(-220, 220);
+    const dur    = azar(1500, 2700);
+
+    const anim = svg.animate([
+      { transform: 'translate(0,0) rotate(0deg)',                                  opacity: 0 },
+      { transform: `translate(${deriva * .35}px, ${caida * .28}px) rotate(${giro * .3}deg)`, opacity: .9, offset: .18 },
+      { transform: `translate(${deriva}px, ${caida}px) rotate(${giro}deg)`,        opacity: 0 },
+    ], { duration: dur, easing: 'cubic-bezier(.25,.6,.4,1)' });
+
+    anim.onfinish = () => { svg.remove(); vivos--; };
+  }
+
+  window.addEventListener('mousemove', e => {
+    const ahora = performance.now();
+    if (ahora - listo < 38) return;               // no más de ~26 por segundo
+
+    const dx = e.clientX - ultimoX, dy = e.clientY - ultimoY;
+    if (Math.hypot(dx, dy) < PASO) return;        // solo si de verdad se movió
+
+    ultimoX = e.clientX; ultimoY = e.clientY; listo = ahora;
+    soltar(e.clientX, e.clientY);
+  }, { passive: true });
+
+  // Al salir y volver a la pestaña, evita una ráfaga desde la última posición
+  document.addEventListener('visibilitychange', () => { ultimoX = ultimoY = 0; });
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   Animaciones de entrada (fade down)
+   Los contenedores marcados con data-stagger convierten a sus hijos
+   en elementos animados y los sueltan uno tras otro.
+   ═══════════════════════════════════════════════════════════════ */
+
+// Los hijos de las grillas entran escalonados
+$$('[data-stagger]').forEach(cont => {
+  [...cont.children].forEach((hijo, i) => {
+    hijo.classList.add('reveal');
+    hijo.style.transitionDelay = Math.min(i * 130, 780) + 'ms';
+  });
+});
+
+const obs = new IntersectionObserver(es => es.forEach(en => {
+  if (en.isIntersecting) { en.target.classList.add('visible'); obs.unobserve(en.target); }
+// Dispara en cuanto el bloque asoma 90 px, para que el recorrido
+// completo ocurra a la vista y no a medias.
+}), { threshold: 0, rootMargin: '0px 0px -120px 0px' });
+
+$$('.reveal').forEach(el => obs.observe(el));
+
+/* El contenido del collapse mide 0 px mientras está cerrado, así que
+   nunca llega a cruzar el umbral del observador. Al abrirlo lo
+   mostramos a mano, escalonado igual que el resto. */
+btnPadrinos.addEventListener('click', () => {
+  if (!panelPadrinos.classList.contains('abierto')) return;
+  $$('.reveal', panelPadrinos).forEach(el => el.classList.add('visible'));
+});
+</script>
+
+</body>
+</html>
