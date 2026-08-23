@@ -48,8 +48,12 @@
      script diferido se ejecutaría después de él y `gsap` no existiría
      todavía. El bloque que los usa (más abajo) comprueba `window.gsap`
      antes de tocar nada, así que si el CDN falla el sitio se ve igual. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<!-- SplitText: plugin gratuito desde GSAP 3.13 (antes era de pago),
+     por eso el bump de versión de arriba. Opcional: si no carga, el
+     guard más abajo deja el nombre de portada sin dividir. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
 
 <!-- Lenis, versión fijada. Igual que GSAP: sin defer y con guard de
      `window.Lenis` antes de usarla, para no dejar el sitio en blanco
@@ -389,7 +393,7 @@ tailwind.config = {
   <div class="relative z-10 text-center px-6 text-fondo w-full max-w-2xl">
     <p class="font-sans text-[10px] tracking-[.5em] uppercase text-suave">Nuestra boda</p>
 
-    <h1 class="mt-8 font-script text-6xl sm:text-8xl" data-bind="nombres"></h1>
+    <h1 id="nombresPortada" class="mt-8 font-script text-6xl sm:text-8xl" data-bind="nombres"></h1>
 
     <div class="mt-12 flex items-stretch justify-center gap-6 sm:gap-10">
       <div class="flex flex-col justify-center text-right">
@@ -973,11 +977,13 @@ const get = p => p.split('.').reduce((o, k) => (o ?? {})[k], CONFIG);
    ═══════════════════════════════════════════════════════════════ */
 const animGsap = {
   gsapListo: typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined',
+  splitListo: typeof window.SplitText !== 'undefined',
   reducida: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
 };
 
 if (animGsap.gsapListo) {
   gsap.registerPlugin(ScrollTrigger);
+  if (animGsap.splitListo) gsap.registerPlugin(SplitText);
 } else {
   console.warn('GSAP/ScrollTrigger no cargó; el sitio sigue con el reveal por CSS.');
 }
@@ -1041,6 +1047,31 @@ $$('[data-bind]').forEach(el => {
   const v = get(el.dataset.bind);
   if (v != null) el.textContent = v;
 });
+
+/* ═══════════════════════════════════════════════════════════════
+   Nombre de portada, dividido por palabras
+   Tiene que correr después del data-bind de arriba: antes de eso el
+   <h1> está vacío y no habría nada que partir.
+   Por letra se ve mal aquí: font-script es una cursiva conectada
+   (Great Vibes) y SplitText mete cada carácter en su propia caja
+   inline-block, lo que corta la conexión entre letras. Dividir por
+   palabras ("Valeria", "&", "David") evita ese problema y sigue
+   dando una entrada escalonada. gsap.from() es correcto en este
+   caso —a diferencia del reveal migrado más abajo— porque el <h1>
+   no tiene ningún estado oculto por CSS de antemano: su estilo
+   actual ya es el destino final que GSAP necesita detectar.
+   ═══════════════════════════════════════════════════════════════ */
+if (animGsap.gsapListo && animGsap.splitListo && !animGsap.reducida) {
+  const h1Nombres = $('#nombresPortada');
+  if (h1Nombres && h1Nombres.textContent.trim()) {
+    h1Nombres.setAttribute('aria-label', h1Nombres.textContent);
+    const partido = new SplitText(h1Nombres, { type: 'words' });
+    gsap.from(partido.words, {
+      opacity: 0, y: 24,
+      duration: .9, ease: 'power2.out', stagger: .15, delay: .2,
+    });
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    ORLAS FLORALES
