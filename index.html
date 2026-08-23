@@ -135,9 +135,16 @@ tailwind.config = {
 
   /* Cuando GSAP lleva el reveal (ver JS), la transición de arriba se
      desactiva: si no, cada frame que GSAP escribe sobre opacity/
-     transform/filter dispararía además una transición CSS sobre esos
-     mismos valores, compitiendo con la interpolación de GSAP. */
-  html.gsap-reveal .reveal { transition: none; }
+     transform dispararía además una transición CSS sobre esos
+     mismos valores, compitiendo con la interpolación de GSAP.
+     El filter:blur(12px) también se anula aquí: GSAP ya no anima el
+     blur (ver comentario junto a EFECTOS en el JS — es una de las
+     propiedades más caras de repintar, y con varias cajas grandes
+     animando a la vez el navegador llegaba a saltar frames), así
+     que si se dejara el blur estático de esta regla, el elemento se
+     vería borroso toda la animación y "saltaría" a nítido de golpe
+     al final. */
+  html.gsap-reveal .reveal { transition: none; filter: none; }
 
   /* Estado inicial de cada variante */
   [data-efecto="abajo"]      .reveal { transform: translateY(-140px) scale(.88); }
@@ -1945,25 +1952,33 @@ if (animGsap.gsapListo && !animGsap.reducida) {
   // tenía en CSS más arriba, para que el resultado visual sea el
   // mismo aunque ahora lo mueva GSAP.
   const EFECTOS = {
-    abajo:      { y: -140, scale: .88,                filter: 'blur(12px)' },
-    arriba:     { y:  140, scale: .88,                filter: 'blur(12px)' },
-    izquierda:  { x: -170, rotation: -3,               filter: 'blur(12px)' },
-    derecha:    { x:  170, rotation:  3,               filter: 'blur(12px)' },
-    zoom:       { scale: .5,                           filter: 'blur(16px)' },
-    alejar:     { scale: 1.4,                          filter: 'blur(20px)' },
-    inclinar:   { y: -100, rotation: -9, scale: .9,    filter: 'blur(12px)' },
-    enfoque:    { scale: 1.08,                         filter: 'blur(32px)' },
+    abajo:      { y: -140, scale: .88 },
+    arriba:     { y:  140, scale: .88 },
+    izquierda:  { x: -170, rotation: -3 },
+    derecha:    { x:  170, rotation:  3 },
+    zoom:       { scale: .5 },
+    alejar:     { scale: 1.4 },
+    inclinar:   { y: -100, rotation: -9, scale: .9 },
+    enfoque:    { scale: 1.08 },
     desplegar:  { rotationX: -88, y: -30, transformPerspective: 1200,
-                  transformOrigin: 'top center',       filter: 'blur(12px)' },
-    cortina:    { y: -40, clipPath: 'inset(0% 0% 100% 0%)', filter: 'none' },
+                  transformOrigin: 'top center' },
+    cortina:    { y: -40, clipPath: 'inset(0% 0% 100% 0%)' },
   };
+  // Sin filter: blur() en ninguna variante. Es de las propiedades
+  // más caras de animar (fuerza un repintado del área en cada
+  // frame, no solo composición de GPU como opacity/transform), y
+  // con 2-3 cajas grandes animando el blur a la vez (regalos,
+  // hoteles, footer) el navegador llegaba a saltar frames de forma
+  // visible —el "parpadeo" reportado—. opacity+transform alcanzan
+  // para que la entrada se sienta igual de elegante, sin ese costo.
+  //
   // Estado final común: se especifica siempre explícito (fromTo, no
   // from) porque el CSS ya deja el elemento oculto en el arranque de
   // su variante; si dejáramos que GSAP infiriera el destino leyendo
   // el estilo actual, destino y origen coincidirían y no se vería
   // ningún movimiento.
   const FINAL = { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0, rotationX: 0,
-                  filter: 'none', clipPath: 'inset(0% 0% 0% 0%)' };
+                  clipPath: 'inset(0% 0% 0% 0%)' };
 
   const inicioReveal = el => ({
     opacity: 0,
