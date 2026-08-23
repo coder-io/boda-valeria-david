@@ -38,8 +38,8 @@ El plan original iba 1→6, pero ese orden no coincide con el de riesgo/valor. O
 | 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 | ✅ Hecho |
 | 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | ✅ Hecho |
 | 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | ✅ Hecho |
-| 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | ⏳ Siguiente |
-| 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | Pendiente |
+| 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | ✅ Hecho |
+| 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | ⏳ Siguiente |
 | 8 | Fase 6 — Rendimiento y pruebas | — | — | todas | Pendiente |
 
 Cada fase termina en un commit propio. `index.html` es un único archivo de 91KB; sin
@@ -177,34 +177,49 @@ bien en todos los dispositivos por igual.
 - **Pendiente de Fase 6:** verificar en dispositivo real que el flujo de
   RSVP/WhatsApp no se vio afectado (no debería, son solo `<a>` sin lógica de scroll).
 
-## Fase 3 — Migrar el sistema de "reveal" a GSAP ScrollTrigger
+## Fase 3 — Migrar el sistema de "reveal" a GSAP ScrollTrigger — ✅ Completada
 
-**Advertencia de valor:** esta fase reescribe 10 variantes CSS que *ya funcionan*
-(líneas 112-133) para obtener lo mismo pero en JS. Justificarla solo si se quiere
-coreografía real —timelines encadenadas entre bloques—, no como fin en sí. Alternativa
-razonable: aplicarla solo a 2-3 secciones donde aporte y dejar el resto con el
-`IntersectionObserver` actual.
+Implementada en `02b81ba`. Se decidió (a propósito, preguntando antes de proceder)
+hacer la **migración completa** de las 10 variantes en vez de acotarla a 2-3
+secciones, aprovechando que toda la infraestructura de guard/fallback ya estaba
+construida en fases anteriores. Arquitectura: un solo `if (animGsap.gsapListo &&
+!animGsap.reducida) {...} else {...}` que decide en tiempo de ejecución entre el
+sistema nuevo (GSAP) y el original (`IntersectionObserver` + CSS), este último
+**sin ningún cambio** respecto a como estaba.
 
-- Reutilizar los atributos `data-efecto` de cada `<section>` como mapeo a un tipo de
-  animación GSAP en vez de a una variante CSS.
-- **Neutralizar la `transition` de `.reveal` (líneas 100-108) antes de animar con
-  GSAP.** Si no, cada frame de GSAP dispara además una transición CSS sobre las mismas
-  propiedades → jank garantizado. El CSS debe quedar solo como estado inicial anti-FOUC.
-- **Usar `once: true` / `toggleActions`, no `scrub`, para las entradas.** Con scrub el
-  texto *retrocede* al hacer scroll hacia arriba; la semántica actual del código es
-  "una vez y ya" (`obs.unobserve`, línea 1662). El scrub es para parallax (Fase 5a), no
-  para entradas.
-- Migrar `data-stagger` a `gsap.timeline` con `stagger`, y **quitar la inyección de
-  `transitionDelay` inline en los hijos (línea 1658)** o los delays CSS quedan sumándose
-  por debajo.
-- Casos especiales a preservar: `.orla-caja` (trazo que se dibuja, `stroke-dasharray`,
-  líneas 185-189), enredadera del itinerario (`#enredadera`), collapse de padrinos.
-- **Collapse de padrinos: necesita `ScrollTrigger.refresh()`, no el parche actual.** El
-  código de hoy (líneas 1668-1676) marca `.visible` a mano porque los `.reveal` dentro
-  de `#padrinosPanel` miden 0px cerrados y nunca cruzan el umbral del observer. Con
-  ScrollTrigger el equivalente es refrescar **al terminar la transición de altura del
-  panel**; si no, las posiciones de trigger quedan calculadas sobre un panel colapsado.
-- Mantener fallback de `prefers-reduced-motion` y el guard de `!window.gsap`.
+- Cada `data-efecto` mapeado a un objeto `EFECTOS[tipo]` con los mismos valores que
+  ya tenía en CSS (`y`, `x`, `scale`, `rotation`, `filter`, y para `desplegar`/
+  `cortina` sus casos especiales de `rotationX`/`clipPath`), para que el resultado
+  visual sea equivalente al de antes.
+- **Bug evitado antes de escribir código:** `gsap.from()` infiere el destino leyendo
+  el estilo computado actual del elemento; como el CSS ya deja los `.reveal` ocultos
+  de entrada (anti-FOUC), origen y destino habrían coincidido y no se habría visto
+  ningún movimiento. Se usó `gsap.fromTo()` con ambos extremos explícitos.
+- **`html.gsap-reveal .reveal { transition: none }`** añadido al CSS existente (no se
+  tocó la regla `transition` original, solo se neutraliza cuando GSAP está activo) —
+  resuelve exactamente el riesgo de jank que este documento marcaba.
+- `data-stagger` migrado a `gsap.fromTo(hijos, ..., { stagger: .13 })`; ya no se
+  inyecta `transitionDelay` inline en la rama GSAP (la rama de fallback sí lo sigue
+  haciendo, sin cambios).
+- **`.orla-caja` preservado tal cual pedía el plan:** no anima transform/opacity con
+  GSAP (el CSS ya la deja siempre visible); solo se dispara el trazo vía
+  `ScrollTrigger.create({..., onEnter: () => el.classList.add('visible')})`,
+  reutilizando la transición CSS existente en `.tz > *`.
+- **Collapse de padrinos resuelto con el enfoque correcto, más allá de lo previsto:**
+  en vez de solo añadir `ScrollTrigger.refresh()`, sus `.reveal` (la intro + los
+  hijos de `#padrinos`) se **excluyen por completo** del barrido automático — al
+  estar en `grid-template-rows: 0fr` cuando está cerrado, un `ScrollTrigger` normal
+  mediría su posición de forma incorrecta, no solo "tarde". Se animan a mano, una
+  sola vez, en el click que abre el panel. Y sí se añadió
+  `ScrollTrigger.refresh()` en el `transitionend` de `grid-template-rows`, porque
+  abrir/cerrar cambia el alto real de todo lo que viene después en el documento.
+- `#enredadera` no se tocó (no forma parte del sistema `.reveal`).
+- Fallback de `prefers-reduced-motion` y guard de `gsapListo` heredados de la
+  infraestructura de la Fase 1, sin duplicar lógica.
+- **Verificación:** sintaxis validada con `node --check`. Pendiente de Fase 6:
+  confirmar visualmente en navegador que las 10 variantes se ven equivalentes a
+  como se veían con CSS, y que el collapse de padrinos anima correctamente en la
+  primera apertura y no vuelve a animar en aperturas posteriores.
 
 ## Fase 5b — Detalles de elegancia adicionales
 
