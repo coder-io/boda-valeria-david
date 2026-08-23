@@ -35,8 +35,8 @@ El plan original iba 1→6, pero ese orden no coincide con el de riesgo/valor. O
 |---|---|---|---|---|---|
 | 1 | Fase 0 — Salvaguardas | — | — | — | ✅ Hecho |
 | 2 | Fase 2 — Pétalos ambientales | Alto | Bajo | nada (ni GSAP) | ✅ Hecho |
-| 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 | ⏳ Siguiente |
-| 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | Pendiente |
+| 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 | ✅ Hecho |
+| 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | ⏳ Siguiente |
 | 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | Pendiente |
 | 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | Pendiente |
 | 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | Pendiente |
@@ -89,21 +89,28 @@ previsto.
   se ven bien. No se probó aún en dispositivo real de gama media (queda para
   Fase 6).
 
-## Fase 1 — Preparar el terreno (GSAP) — ⏳ En curso
+## Fase 1 — Preparar el terreno (GSAP) — ✅ Completada
 
-- Añadir CDN de GSAP core + ScrollTrigger junto al `<script>` de Tailwind, **con
-  versión fijada** (no `latest`).
-- **No usar `defer` en esos `<script>`.** El script principal del sitio es *inline* al
-  final del `<body>` (termina en la 1676); un script diferido se ejecuta *después* del
-  parseo, o sea después del inline → `gsap is not defined`. Deben cargarse de forma
-  bloqueante en el `<head>`, o convertir todo el inline en externo diferido, que
-  contradice el "sin build step".
-- **Guard de fallback obligatorio:** `if (!window.gsap) { /* ruta IntersectionObserver
-  actual */ }`. Sin esto, la Fase 3 deja `.reveal { opacity: 0 }` sin nadie que lo
-  revierta y la invitación se ve en blanco.
-- Crear un bloque JS nuevo, separado del IIFE de pétalos-cursor, para no mezclar
-  responsabilidades.
-- Verificar que el sitio sigue funcionando igual antes de tocar animaciones.
+Implementada en `51d53fb`.
+
+- CDN de GSAP **3.12.5** (versión fijada, no `latest`) + ScrollTrigger, vía cdnjs,
+  añadidos justo después del `<script>` de Tailwind en el `<head>`. Ambas URLs
+  verificadas con `curl` (200 OK) antes de commitear.
+- **Sin `defer`**, tal como exigía el riesgo original: el script principal sigue
+  siendo inline al final del `<body>`, así que los scripts de GSAP se cargan de
+  forma bloqueante para que `gsap`/`ScrollTrigger` existan cuando el inline corra.
+- **Guard de fallback implementado:** `animGsap.gsapListo` se calcula comprobando
+  `typeof window.gsap`/`window.ScrollTrigger`; si el CDN falla, se registra un
+  `console.warn` y nada más — el `IntersectionObserver` de `.reveal` (que esta fase
+  no toca) sigue siendo el único que corre. Cumple el criterio de "nunca en blanco".
+- Bloque nuevo (`animGsap`), separado del IIFE de pétalos-cursor y de cualquier otra
+  lógica existente, colocado junto a las utilidades (`$`, `$$`, `get`) cerca del
+  principio del script principal.
+- `gsap.registerPlugin(ScrollTrigger)` se ejecuta solo si ambas librerías cargaron.
+- **Verificación:** sintaxis validada con `node --check`; el sistema de reveal
+  actual no se modificó, así que el sitio se comporta exactamente igual que antes
+  de esta fase — pendiente solo la prueba real de "bloquear el CDN en DevTools" que
+  corresponde formalmente a la Fase 6.
 
 ## Fase 5a — Parallax de portada
 
