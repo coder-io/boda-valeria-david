@@ -1998,10 +1998,19 @@ if (animGsap.gsapListo && !animGsap.reducida) {
       });
     });
 
+  // La cuenta regresiva actualiza su texto cada segundo (ver
+  // setInterval(tick) más abajo) mientras estos números todavía
+  // podrían estar en pleno rotationX + filter:blur() de "desplegar":
+  // cambiar el contenido de un elemento con esas dos cosas activas a
+  // la vez es una combinación clásica de parpadeo de repintado en el
+  // navegador. Para ellos, una entrada más simple (solo opacity/y).
+  const inicioStagger = cont =>
+    cont.querySelector('[data-cd]') ? { opacity: 0, y: -30 } : inicioReveal(cont);
+
   $$('[data-stagger]').filter(cont => !dentroDePadrinos(cont)).forEach(cont => {
     const hijos = [...cont.children];
     if (!hijos.length) return;
-    gsap.fromTo(hijos, inicioReveal(cont), {
+    gsap.fromTo(hijos, inicioStagger(cont), {
       ...FINAL,
       duration: 1.1,
       ease: 'power3.out',
