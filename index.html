@@ -367,7 +367,9 @@ tailwind.config = {
   }
   #petalosAmbiente svg {
     position: absolute; top: -40px; will-change: transform;
-    filter: drop-shadow(0 1px 3px rgb(0 0 0 / .18));
+    /* La sombra se fija por pétalo desde JS (proporcional a su
+       tamaño): una igual para todos se ve bien en los grandes pero
+       "ensucia"/emborrona los chicos, sobre todo en mobile. */
   }
   #petalosAmbiente svg path,
   #petalosAmbiente svg circle {
@@ -1848,13 +1850,19 @@ const FORMAS = [
   // Tres planos de profundidad: el pétalo "cerca" es grande, opaco y
   // cae rápido; el "lejos" es chico, tenue y cae despacio. El peso
   // hace que haya más pétalos de fondo que en primer plano, como en
-  // una escena real.
+  // una escena real. Duraciones pensadas para que se sienta
+  // ambiental, no una lluvia —si se ve muy lenta, es a propósito—.
   const PLANOS = [
-    { tam: [50, 70], opacidad: [.7, .95], dur: [5000,  7500], peso: 2 },  // cerca
-    { tam: [34, 46], opacidad: [.5, .75], dur: [7000,  9500], peso: 3 },  // media
-    { tam: [18, 26], opacidad: [.3, .55], dur: [9000, 13000], peso: 5 },  // lejos
+    { tam: [50, 70], opacidad: [.7, .95], dur: [ 8000, 12000], peso: 2 },  // cerca
+    { tam: [34, 46], opacidad: [.5, .75], dur: [11000, 15000], peso: 3 },  // media
+    { tam: [18, 26], opacidad: [.3, .55], dur: [14000, 19000], peso: 5 },  // lejos
   ];
   const PESO_TOTAL = PLANOS.reduce((s, p) => s + p.peso, 0);
+
+  // En mobile los mismos tamaños se ven desproporcionados (ocupan
+  // más pantalla relativa): se escalan hacia abajo, no se cambia el
+  // diseño de los tres planos.
+  const escalaTam = () => anchoMovil() ? .68 : 1;
 
   function elegirPlano() {
     let r = Math.random() * PESO_TOTAL;
@@ -1869,12 +1877,16 @@ const FORMAS = [
     const plano = elegirPlano();
     const svg = document.createElementNS(SVG, 'svg');
     svg.setAttribute('viewBox', '0 0 18 18');
-    const tam = azar(...plano.tam);
+    const tam = azar(...plano.tam) * escalaTam();
     svg.setAttribute('width', tam);
     svg.setAttribute('height', tam);
     const x = azar(0, window.innerWidth - tam);
     svg.style.left = x + 'px';
     svg.style.opacity = azar(...plano.opacidad);
+    // Sombra proporcional al tamaño real: fija se ve bien en los
+    // pétalos grandes pero emborrona los chicos (el "tosco" en
+    // mobile venía de aquí, no del tamaño en sí).
+    svg.style.filter = `drop-shadow(0 ${(tam * .014).toFixed(2)}px ${(tam * .045).toFixed(2)}px rgb(0 0 0 / .18))`;
     svg.innerHTML = `<g>${FORMAS[(Math.random() * FORMAS.length) | 0]}</g>`;
     capa.appendChild(svg);
 
