@@ -326,6 +326,28 @@ tailwind.config = {
   }
   #petalos svg { position: absolute; will-change: transform, opacity; }
 
+  /* Lluvia ambiental: capa propia, distinta de la del cursor.
+     z-index propio (35) para no heredar el 40 que ya comparten
+     #petalos y #novios. Pétalo blanco con un trazo tinta muy sutil,
+     así se ve tanto sobre fondos claros (marfil) como oscuros. */
+  #petalosAmbiente {
+    position: fixed; inset: 0; z-index: 35;
+    pointer-events: none; overflow: hidden;
+  }
+  #petalosAmbiente svg {
+    position: absolute; top: -40px; will-change: transform;
+    filter: drop-shadow(0 1px 3px rgb(0 0 0 / .18));
+  }
+  #petalosAmbiente svg path,
+  #petalosAmbiente svg circle {
+    fill: #FFFFFF;
+    stroke: rgb(var(--c-ink) / .22);
+    stroke-width: .6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #petalosAmbiente { display: none; }
+  }
+
   summary::-webkit-details-marker { display: none; }
 </style>
 </head>
@@ -662,6 +684,9 @@ tailwind.config = {
 
 <!-- Pétalos que deja caer el puntero -->
 <div id="petalos" aria-hidden="true"></div>
+
+<!-- Lluvia ambiental de pétalos: cae sola, con el tiempo, y funciona en touch -->
+<div id="petalosAmbiente" aria-hidden="true"></div>
 
 <!-- ══════════ LAS PALOMAS ══════════
      Dos palomas fijas que cambian de pose según la sección que estés
@@ -1567,6 +1592,20 @@ const POSES = {
 })();
 
 /* ═══════════════════════════════════════════════════════════════
+   Siluetas compartidas de pétalo/hoja/florecilla.
+   En scope de módulo (no dentro de un IIFE que pueda salir antes)
+   porque tanto el rastro del cursor como la lluvia ambiental —esta
+   última pensada sobre todo para touch— las necesitan.
+   ═══════════════════════════════════════════════════════════════ */
+const FORMAS = [
+  '<path d="M9 0C13 5 13 13 9 18 5 13 5 5 9 0Z"/>',
+  '<path d="M1 9C6 3 13 3 17 6 12 12 5 13 1 9Z"/>',
+  '<g><circle cx="9" cy="4.6" r="3.1"/><circle cx="13.4" cy="7.8" r="3.1"/>' +
+    '<circle cx="11.7" cy="13" r="3.1"/><circle cx="6.3" cy="13" r="3.1"/>' +
+    '<circle cx="4.6" cy="7.8" r="3.1"/></g>',
+];
+
+/* ═══════════════════════════════════════════════════════════════
    Lluvia de pétalos tras el puntero
    Se activa solo con puntero fino y sin reduced-motion. Cada pétalo
    cae con deriva lateral y giro propios, y se retira solo al acabar.
@@ -1580,15 +1619,6 @@ const POSES = {
   const MAX  = 34;          // pétalos vivos a la vez
   const PASO = 22;          // distancia mínima recorrida entre pétalos
   let vivos = 0, ultimoX = 0, ultimoY = 0, listo = 0;
-
-  // Tres siluetas: pétalo, hoja y florecilla de cinco pétalos
-  const FORMAS = [
-    '<path d="M9 0C13 5 13 13 9 18 5 13 5 5 9 0Z"/>',
-    '<path d="M1 9C6 3 13 3 17 6 12 12 5 13 1 9Z"/>',
-    '<g><circle cx="9" cy="4.6" r="3.1"/><circle cx="13.4" cy="7.8" r="3.1"/>' +
-      '<circle cx="11.7" cy="13" r="3.1"/><circle cx="6.3" cy="13" r="3.1"/>' +
-      '<circle cx="4.6" cy="7.8" r="3.1"/></g>',
-  ];
 
   // El color sale del tema, así el rastro combina con la paleta activa
   const tonos = () => {
@@ -1641,6 +1671,72 @@ const POSES = {
 
   // Al salir y volver a la pestaña, evita una ráfaga desde la última posición
   document.addEventListener('visibilitychange', () => { ultimoX = ultimoY = 0; });
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   Lluvia ambiental de pétalos
+   A diferencia de la anterior, no depende del puntero: cae sola con
+   el tiempo, así que también se ve en touch. Cada pétalo se genera,
+   cae con un vaivén tipo seno y se retira solo al llegar abajo.
+   ═══════════════════════════════════════════════════════════════ */
+(function petalosAmbiente() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const capa = $('#petalosAmbiente');
+  const anchoMovil = () => window.innerWidth < 640;
+  let MAX = anchoMovil() ? 12 : 24;   // pétalos vivos a la vez, según viewport
+  let vivos = 0, activo = true, temporizador = null;
+
+  const azar = (a, b) => a + Math.random() * (b - a);
+
+  function soltar() {
+    if (!activo || vivos >= MAX) return;
+    vivos++;
+
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('viewBox', '0 0 18 18');
+    const tam = azar(10, 20);
+    svg.setAttribute('width', tam);
+    svg.setAttribute('height', tam);
+    const x = azar(0, window.innerWidth - tam);
+    svg.style.left = x + 'px';
+    svg.style.opacity = azar(.35, .8);
+    svg.innerHTML = `<g>${FORMAS[(Math.random() * FORMAS.length) | 0]}</g>`;
+    capa.appendChild(svg);
+
+    const caida   = window.innerHeight + 80;      // cruza toda la pantalla
+    const deriva  = azar(60, 140);                 // amplitud del vaivén
+    const giro    = azar(-160, 160);
+    const dur     = azar(7000, 13000);             // caída lenta, ambiental
+    const sentido = Math.random() < .5 ? 1 : -1;
+
+    const anim = svg.animate([
+      { transform: `translate(0px, 0px) rotate(0deg)`,                                            offset: 0 },
+      { transform: `translate(${sentido * deriva}px, ${caida * .25}px) rotate(${giro * .25}deg)`,  offset: .25 },
+      { transform: `translate(0px, ${caida * .5}px) rotate(${giro * .5}deg)`,                      offset: .5 },
+      { transform: `translate(${-sentido * deriva}px, ${caida * .75}px) rotate(${giro * .75}deg)`, offset: .75 },
+      { transform: `translate(0px, ${caida}px) rotate(${giro}deg)`,                                offset: 1 },
+    ], { duration: dur, easing: 'ease-in-out' });
+
+    anim.onfinish = () => { svg.remove(); vivos--; };
+  }
+
+  function programar() {
+    temporizador = setTimeout(() => {
+      soltar();
+      if (activo) programar(); else temporizador = null;
+    }, azar(600, 1600));
+  }
+
+  // Sin gastar CPU/batería mientras la pestaña no se ve; al volver, retoma
+  document.addEventListener('visibilitychange', () => {
+    activo = !document.hidden;
+    if (activo && !temporizador) programar();
+  });
+
+  window.addEventListener('resize', () => { MAX = anchoMovil() ? 12 : 24; });
+
+  programar();
 })();
 
 /* ═══════════════════════════════════════════════════════════════
