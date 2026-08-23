@@ -364,8 +364,8 @@ tailwind.config = {
 <body class="bg-fondo text-tinta font-sans">
 
 <!-- ══════════ 1. PORTADA ══════════ -->
-<section class="relative min-h-[100svh] flex items-center justify-center overflow-hidden" data-pose="saludo">
-  <img src="img/bn-abrazo.jpeg" alt="" class="absolute inset-0 w-full h-full object-cover">
+<section id="portada" class="relative min-h-[100svh] flex items-center justify-center overflow-hidden" data-pose="saludo">
+  <img id="imgPortada" src="img/bn-abrazo.jpeg" alt="" class="absolute inset-0 w-full h-full object-cover">
   <div class="absolute inset-0 bg-hondo/70"></div>
 
   <div class="relative z-10 text-center px-6 text-fondo w-full max-w-2xl">
@@ -962,6 +962,33 @@ if (animGsap.gsapListo) {
   gsap.registerPlugin(ScrollTrigger);
 } else {
   console.warn('GSAP/ScrollTrigger no cargó; el sitio sigue con el reveal por CSS.');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Parallax de portada
+   La foto se escala un poco de más (vía gsap.set, para que el motor
+   la tome como base de su propio transform) y se desplaza despacio
+   al hacer scroll — el overflow-hidden de la sección recorta el
+   sobrante, así nunca se ve un borde vacío. `scrub` la liga
+   directamente a la posición del scroll, que es lo que le da la
+   sensación de profundidad; distinto del reveal de entrada, donde
+   scrub se ve mal.
+   ═══════════════════════════════════════════════════════════════ */
+if (animGsap.gsapListo && !animGsap.reducida) {
+  const imgPortada = $('#imgPortada');
+  if (imgPortada) {
+    gsap.set(imgPortada, { scale: 1.15, transformOrigin: 'center center' });
+    gsap.to(imgPortada, {
+      yPercent: 12,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#portada',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      },
+    });
+  }
 }
 
 $$('[data-bind]').forEach(el => {
