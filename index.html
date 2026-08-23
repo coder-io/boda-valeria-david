@@ -1689,25 +1689,43 @@ const FORMAS = [
 
   const azar = (a, b) => a + Math.random() * (b - a);
 
+  // Tres planos de profundidad: el pétalo "cerca" es grande, opaco y
+  // cae rápido; el "lejos" es chico, tenue y cae despacio. El peso
+  // hace que haya más pétalos de fondo que en primer plano, como en
+  // una escena real.
+  const PLANOS = [
+    { tam: [50, 70], opacidad: [.7, .95], dur: [5000,  7500], peso: 2 },  // cerca
+    { tam: [34, 46], opacidad: [.5, .75], dur: [7000,  9500], peso: 3 },  // media
+    { tam: [18, 26], opacidad: [.3, .55], dur: [9000, 13000], peso: 5 },  // lejos
+  ];
+  const PESO_TOTAL = PLANOS.reduce((s, p) => s + p.peso, 0);
+
+  function elegirPlano() {
+    let r = Math.random() * PESO_TOTAL;
+    for (const p of PLANOS) { if ((r -= p.peso) <= 0) return p; }
+    return PLANOS[PLANOS.length - 1];
+  }
+
   function soltar() {
     if (!activo || vivos >= MAX) return;
     vivos++;
 
+    const plano = elegirPlano();
     const svg = document.createElementNS(SVG, 'svg');
     svg.setAttribute('viewBox', '0 0 18 18');
-    const tam = azar(11, 22);
+    const tam = azar(...plano.tam);
     svg.setAttribute('width', tam);
     svg.setAttribute('height', tam);
     const x = azar(0, window.innerWidth - tam);
     svg.style.left = x + 'px';
-    svg.style.opacity = azar(.35, .8);
+    svg.style.opacity = azar(...plano.opacidad);
     svg.innerHTML = `<g>${FORMAS[(Math.random() * FORMAS.length) | 0]}</g>`;
     capa.appendChild(svg);
 
     const caida   = window.innerHeight + 80;      // cruza toda la pantalla
     const deriva  = azar(60, 140);                 // amplitud del vaivén
     const giro    = azar(-160, 160);
-    const dur     = azar(7000, 13000);             // caída lenta, ambiental
+    const dur     = azar(...plano.dur);            // más cerca = cae más rápido
     const sentido = Math.random() < .5 ? 1 : -1;
 
     const anim = svg.animate([
