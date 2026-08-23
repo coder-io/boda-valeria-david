@@ -1998,19 +1998,30 @@ if (animGsap.gsapListo && !animGsap.reducida) {
       });
     });
 
-  // La cuenta regresiva actualiza su texto cada segundo (ver
-  // setInterval(tick) más abajo) mientras estos números todavía
-  // podrían estar en pleno rotationX + filter:blur() de "desplegar":
-  // cambiar el contenido de un elemento con esas dos cosas activas a
-  // la vez es una combinación clásica de parpadeo de repintado en el
-  // navegador. Para ellos, una entrada más simple (solo opacity/y).
-  const inicioStagger = cont =>
-    cont.querySelector('[data-cd]') ? { opacity: 0, y: -30 } : inicioReveal(cont);
-
   $$('[data-stagger]').filter(cont => !dentroDePadrinos(cont)).forEach(cont => {
     const hijos = [...cont.children];
     if (!hijos.length) return;
-    gsap.fromTo(hijos, inicioStagger(cont), {
+
+    if (cont.querySelector('[data-cd]')) {
+      // La cuenta regresiva actualiza su texto cada segundo (ver
+      // setInterval(tick) más abajo). Animar cada número por
+      // separado significa que GSAP escribe su opacity/transform en
+      // cada frame sobre el mismo elemento cuyo texto interno muta
+      // el reloj — la primera corrección (suavizar el efecto) no
+      // bastó porque el choque no era por el tipo de efecto, sino
+      // por animar esos nodos frame a frame mientras se les toca el
+      // contenido. Solución: no se anima ningún número individual,
+      // se marcan visibles de una y se anima el bloque completo
+      // (el contenedor) como un solo grupo, sin tocar los hijos.
+      hijos.forEach(h => h.classList.add('visible'));
+      gsap.fromTo(cont, { opacity: 0, y: -30 }, {
+        opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', clearProps: 'all',
+        scrollTrigger: { trigger: cont, start: 'top bottom-=120', once: true },
+      });
+      return;
+    }
+
+    gsap.fromTo(hijos, inicioReveal(cont), {
       ...FINAL,
       duration: 1.1,
       ease: 'power3.out',
