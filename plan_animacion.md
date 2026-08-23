@@ -39,8 +39,8 @@ El plan original iba 1→6, pero ese orden no coincide con el de riesgo/valor. O
 | 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | ✅ Hecho |
 | 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | ✅ Hecho |
 | 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | ✅ Hecho |
-| 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | ⏳ Siguiente |
-| 8 | Fase 6 — Rendimiento y pruebas | — | — | todas | Pendiente |
+| 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | ✅ Hecho |
+| 8 | Fase 6 — Rendimiento y pruebas | — | — | todas | ⏳ Siguiente |
 
 Cada fase termina en un commit propio. `index.html` es un único archivo de 91KB; sin
 puntos de retorno, un error sale caro.
@@ -221,16 +221,37 @@ sistema nuevo (GSAP) y el original (`IntersectionObserver` + CSS), este último
   como se veían con CSS, y que el collapse de padrinos anima correctamente en la
   primera apertura y no vuelve a animar en aperturas posteriores.
 
-## Fase 5b — Detalles de elegancia adicionales
+## Fase 5b — Detalles de elegancia adicionales — ✅ Completada (nombre de portada)
 
-- Reveal de texto letra por letra/línea por línea (portada, nombres, frases).
-  **Usar SplitText, no SplitType:** SplitText es plugin gratuito de GSAP desde 3.13, así
-  que no añade otro CDN.
-- **Accesibilidad:** al partir el `<h1>` de los nombres hay que poner `aria-label` en el
-  contenedor, o el lector de pantalla lo lee letra por letra.
-- Mantener el resto de animaciones que ya funcionan bien (palomas por sección
-  `data-pose`, cuenta regresiva, enredadera) — solo ajustar donde haga falta para que
-  convivan con ScrollTrigger.
+Implementada en `605cc9e`. Se hizo solo el candidato de mayor valor (el nombre de
+portada); frases/otros textos quedan como candidatos futuros si se quiere repetir el
+patrón.
+
+- **Bump de versión necesario, no anticipado en el plan:** GSAP/ScrollTrigger subidos
+  de `3.12.5` a `3.13.0` — se verificó con `curl` que SplitText devuelve 404 en
+  `3.12.5` (era plugin de pago) y 200 en `3.13.0` (gratuito desde ahí). Sin este bump,
+  la afirmación original de este documento ("SplitText es gratis desde 3.13") habría
+  sido cierta pero inútil, porque seguíamos pinneados en una versión anterior.
+- `animGsap.splitListo` como guard independiente de `gsapListo`, con su propio
+  `gsap.registerPlugin(SplitText)` condicional — si ese único script falla, el resto
+  de la infraestructura GSAP no se ve afectada.
+- **Decisión de diseño no prevista: dividir por palabras, no por letra.** El nombre usa
+  `font-script` (Great Vibes, cursiva conectada); por carácter, SplitText mete cada
+  letra en su propia caja `inline-block` y rompe la conexión visual entre letras. Por
+  palabra ("Valeria", "&", "David") da una entrada igual de elegante sin ese problema.
+- **Dos bugs evitados antes de escribir el código final:**
+  1. El bloque debía colocarse *después* del `$$('[data-bind]').forEach(...)` que
+     rellena el `<h1>` — puesto antes, se habría dividido un elemento vacío.
+  2. Aquí sí corresponde `gsap.from()` (a diferencia de la migración de la Fase 3):
+     el `<h1>` no tiene ningún estado oculto por CSS de antemano, así que GSAP infiere
+     correctamente el destino leyendo su estilo actual.
+- `aria-label` con el texto completo puesto **antes** de dividir, para que el lector de
+  pantalla anuncie el nombre completo y no palabra por palabra.
+- Guardado detrás de `animGsap.gsapListo && animGsap.splitListo && !animGsap.reducida`.
+- **Pendiente / fuera de esta pasada:** reveal de otras frases (frase de portada,
+  itinerario), y micro-parallax adicional más allá del de portada (ya cubierto en
+  Fase 5a). El resto de animaciones existentes (palomas, cuenta regresiva, enredadera)
+  no se tocaron — no lo necesitaban tras la Fase 3/4.
 
 ## Fase 6 — Rendimiento y pruebas en mobile
 
