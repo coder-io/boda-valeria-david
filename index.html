@@ -42,6 +42,15 @@
      ============================================================ -->
 
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP + ScrollTrigger, versión fijada. Sin `defer`: el script
+     principal del sitio es inline al final del <body>, así que un
+     script diferido se ejecutaría después de él y `gsap` no existiría
+     todavía. El bloque que los usa (más abajo) comprueba `window.gsap`
+     antes de tocar nada, así que si el CDN falla el sitio se ve igual. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Great+Vibes&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
@@ -933,6 +942,27 @@ const CONFIG = {
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 const get = p => p.split('.').reduce((o, k) => (o ?? {})[k], CONFIG);
+
+/* ═══════════════════════════════════════════════════════════════
+   Terreno para GSAP / ScrollTrigger.
+   Bloque separado del resto: por ahora solo registra el plugin y
+   deja listo `animGsap`, disponible para el resto del script. El
+   sistema de reveal actual
+   (IntersectionObserver + clases .reveal/.visible, más abajo) sigue
+   siendo el que corre — se migra en una fase aparte. Si el CDN de
+   GSAP falla, `gsapListo` queda en false y nada de lo que ya
+   funciona se ve afectado.
+   ═══════════════════════════════════════════════════════════════ */
+const animGsap = {
+  gsapListo: typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined',
+  reducida: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+};
+
+if (animGsap.gsapListo) {
+  gsap.registerPlugin(ScrollTrigger);
+} else {
+  console.warn('GSAP/ScrollTrigger no cargó; el sitio sigue con el reveal por CSS.');
+}
 
 $$('[data-bind]').forEach(el => {
   const v = get(el.dataset.bind);
