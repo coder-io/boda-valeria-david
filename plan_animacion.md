@@ -129,6 +129,17 @@ Implementada en `09df0e2`.
 - **Ahora sí se decide sobre Lenis** (ver Fase 4): con este parallax en producción,
   hay algo real que Lenis puede suavizar en desktop.
 
+**Ajustes posteriores, fuera del alcance original de esta fase:**
+- `object-position` de `#imgPortada` fijado en `32% center` (commit `b9aada7`): la
+  foto es panorámica y la pareja está a ~32% del ancho, no en el centro geométrico;
+  `object-cover` por defecto recortaba usando el centro de la imagen y los dejaba
+  desplazados a la izquierda en pantallas más angostas que la foto.
+- Zoom por pellizco bloqueado en todo el sitio (commit `add6b00`): se añadió
+  `maximum-scale=1.0, user-scalable=no` al `<meta viewport>`. No es parte del plan
+  de animación, pero se hizo en la misma sesión — **nota de accesibilidad:** esto le
+  quita a alguien con baja visión la opción de hacer zoom (WCAG 1.4.4); pedido
+  explícito del usuario, queda documentado por si se quiere revisar más adelante.
+
 ## Fase 4 — Lenis, condicionado a desktop
 
 **Qué aporta realmente:** suaviza la rueda del ratón (que sin él avanza a saltos
