@@ -395,7 +395,7 @@ tailwind.config = {
 
     <h1 id="nombresPortada" class="mt-8 font-script text-6xl sm:text-8xl" data-bind="nombres"></h1>
 
-    <div class="mt-12 flex items-stretch justify-center gap-6 sm:gap-10">
+    <div id="fechaPortada" class="mt-12 flex items-stretch justify-center gap-6 sm:gap-10">
       <div class="flex flex-col justify-center text-right">
         <span class="font-sans text-[10px] sm:text-xs tracking-[.35em] uppercase" data-bind="fecha.dia"></span>
       </div>
@@ -410,7 +410,7 @@ tailwind.config = {
       </div>
     </div>
 
-    <p class="mt-12 max-w-md mx-auto font-serif text-xl sm:text-2xl italic font-light leading-relaxed" data-bind="frasePortada"></p>
+    <p id="fraseHero" class="mt-12 max-w-md mx-auto font-serif text-xl sm:text-2xl italic font-light leading-relaxed" data-bind="frasePortada"></p>
   </div>
 
   <a href="#padres" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-fondo/70 animate-bounce">↓</a>
@@ -1049,7 +1049,7 @@ $$('[data-bind]').forEach(el => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   Nombre de portada, dividido por palabras
+   Portada: nombre, luego fecha, luego frase
    Tiene que correr después del data-bind de arriba: antes de eso el
    <h1> está vacío y no habría nada que partir.
    Por letra se ve mal aquí: font-script es una cursiva conectada
@@ -1057,19 +1057,32 @@ $$('[data-bind]').forEach(el => {
    inline-block, lo que corta la conexión entre letras. Dividir por
    palabras ("Valeria", "&", "David") evita ese problema y sigue
    dando una entrada escalonada. gsap.from() es correcto en este
-   caso —a diferencia del reveal migrado más abajo— porque el <h1>
-   no tiene ningún estado oculto por CSS de antemano: su estilo
-   actual ya es el destino final que GSAP necesita detectar.
+   caso —a diferencia del reveal migrado más abajo— porque ninguno
+   de estos elementos tiene un estado oculto por CSS de antemano: su
+   estilo actual ya es el destino final que GSAP necesita detectar.
+   Fecha y frase quedan en un timeline aparte: arrancan recién cuando
+   termina la animación del nombre, no en paralelo con ella.
    ═══════════════════════════════════════════════════════════════ */
 if (animGsap.gsapListo && animGsap.splitListo && !animGsap.reducida) {
-  const h1Nombres = $('#nombresPortada');
+  const h1Nombres    = $('#nombresPortada');
+  const fechaPortada = $('#fechaPortada');
+  const fraseHero    = $('#fraseHero');
+
   if (h1Nombres && h1Nombres.textContent.trim()) {
     h1Nombres.setAttribute('aria-label', h1Nombres.textContent);
     const partido = new SplitText(h1Nombres, { type: 'words' });
-    gsap.from(partido.words, {
+    const tl = gsap.timeline({ delay: .2 });
+
+    tl.from(partido.words, {
       opacity: 0, y: 24,
-      duration: .9, ease: 'power2.out', stagger: .15, delay: .2,
+      duration: .9, ease: 'power2.out', stagger: .15,
     });
+    if (fechaPortada) {
+      tl.from(fechaPortada, { opacity: 0, y: 16, duration: .7, ease: 'power2.out' });
+    }
+    if (fraseHero) {
+      tl.from(fraseHero, { opacity: 0, y: 16, duration: .7, ease: 'power2.out' });
+    }
   }
 }
 
