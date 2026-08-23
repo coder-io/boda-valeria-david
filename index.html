@@ -215,7 +215,10 @@ tailwind.config = {
   .orla-mini { display: none; }
   @media (max-width: 640px) {
     .orla-ancha { display: none; }
-    .orla-mini  { display: block; width: 90%; }
+    /* Más chica que antes (era 90%): el trazo animado competía con el
+       texto por atención en mobile. Con esto el adorno acompaña sin
+       ser el protagonista de la sección. */
+    .orla-mini  { display: block; width: 52%; max-width: 190px; }
   }
 
   /* El separador no entra desplazándose: se dibuja trazo a trazo. */
