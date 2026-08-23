@@ -37,8 +37,8 @@ El plan original iba 1→6, pero ese orden no coincide con el de riesgo/valor. O
 | 2 | Fase 2 — Pétalos ambientales | Alto | Bajo | nada (ni GSAP) | ✅ Hecho |
 | 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 | ✅ Hecho |
 | 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | ✅ Hecho |
-| 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | ⏳ Siguiente (decisión pendiente) |
-| 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | Pendiente |
+| 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | ✅ Hecho |
+| 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | ⏳ Siguiente |
 | 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | Pendiente |
 | 8 | Fase 6 — Rendimiento y pruebas | — | — | todas | Pendiente |
 
@@ -140,38 +140,42 @@ Implementada en `09df0e2`.
   quita a alguien con baja visión la opción de hacer zoom (WCAG 1.4.4); pedido
   explícito del usuario, queda documentado por si se quiere revisar más adelante.
 
-## Fase 4 — Lenis, condicionado a desktop
+## Fase 4 — Lenis, sin tocar touch — ✅ Completada
 
-**Qué aporta realmente:** suaviza la rueda del ratón (que sin él avanza a saltos
-discretos de ~100px) y, sobre todo, hace que el `scrub`/parallax se vea continuo en vez
-de a escalones. También normaliza la diferencia entre rueda de Windows y trackpad de
-Mac. Nada de eso aplica a táctil: ahí el scroll nativo ya tiene inercia del sistema y
-corre en el compositor, y por eso el default de Lenis (`syncTouch: false`) literalmente
-no hace nada en móvil.
+Implementada en `d7c08e9`. Decisión final, tras discutirlo: en vez de condicionar toda
+la librería a `pointer: fine`, se instancia Lenis en cualquier dispositivo con
+**`syncTouch: false` explícito** — así el modo continuo (rueda/trackpad) solo actúa en
+desktop porque ahí es donde Lenis realmente engancha el scroll, mientras que
+`lenis.scrollTo()` (destino puntual, no gesto continuo) queda disponible y funciona
+bien en todos los dispositivos por igual.
 
-**Decisión:** integrarlo **solo donde aporta**, no globalmente:
-
-```js
-const usarLenis = matchMedia('(pointer: fine)').matches &&
-                  !matchMedia('(prefers-reduced-motion: reduce)').matches;
-```
-
-Así el caso mayoritario (táctil) mantiene el scroll nativo intacto y el riesgo queda
-acotado a desktop. Si al final se descarta el parallax de la Fase 5a, esta fase sobra.
-
-Correcciones obligatorias si se integra:
-
-- **Eliminar `html { scroll-behavior: smooth }` (línea 83)** o Lenis y el navegador
-  pelean por el mismo scroll. (Ojo: la línea 145 lo pone en `auto` bajo
-  `reduced-motion`; esa parte se mantiene.)
-- **Migrar los `scrollIntoView({behavior:'smooth'})` a `lenis.scrollTo()`:**
-  `abrirPadrinos()` (línea 1201) y `cerrarPadrinos()` (línea 1209).
-- Revisar el ancla `href="#padres"` (línea 363) y el deep-link `#padrinos`.
-- Conectar a ScrollTrigger: `lenis.on('scroll', ScrollTrigger.update)`.
-- **`#enredadera` no se rompe con Lenis** (usa `window.addEventListener('scroll')` +
-  rAF en la línea 1345, y Lenis mueve el scroll real, no un transform), pero quedarían
-  dos bucles rAF compitiendo. Engancharlo a `lenis.on('scroll')` o al ticker de GSAP.
-- Verificar que el flujo de RSVP/WhatsApp (`#rsvp`, líneas 628 y 747) sigue bien.
+- CDN de Lenis **1.1.18** (versión fijada, vía jsDelivr), cargada bloqueante junto a
+  GSAP. Guard `typeof window.Lenis !== 'undefined'` igual que con GSAP.
+- `lenis.raf` enganchado a `gsap.ticker.add(...)` en vez de un `requestAnimationFrame`
+  propio — resuelve de raíz la preocupación original de "dos bucles rAF compitiendo"
+  al no crear ninguno nuevo.
+- `lenis.on('scroll', ScrollTrigger.update)` para mantener los triggers sincronizados.
+- **CSS resuelto de forma distinta a lo previsto:** en vez de eliminar
+  `html { scroll-behavior: smooth }`, se añadió `html.lenis-smooth { scroll-behavior:
+  auto !important }` — la propia librería agrega esa clase a `<html>` solo mientras
+  anima, así que el `scroll-behavior` original queda intacto el resto del tiempo (p.
+  ej. si Lenis nunca llega a cargar).
+- **`href="#padres"` migrado**, no solo "revisado": se intercepta el click y se llama
+  `lenis.scrollTo('#padres')`, porque con la clase `lenis-smooth` activa durante el
+  scroll el salto nativo se sentiría instantáneo.
+- **`abrirPadrinos()`/`cerrarPadrinos()` migrados** a `lenis.scrollTo()`, con fallback
+  a `scrollIntoView` si `lenis` es `null` (CDN caído o `reduced-motion`). El centrado
+  de `cerrarPadrinos()` reproduce a mano la matemática de `block:'center'`
+  (`offset = altura/2 - alturaViewport/2`), verificada leyendo el código fuente de
+  Lenis: `offset` se suma directamente al `top` documental del elemento destino.
+- `#enredadera` no se tocó: como `syncTouch` es `false`, en touch Lenis no intercepta
+  el scroll y los eventos `scroll` nativos siguen disparándose igual que siempre; en
+  desktop Lenis sigue escribiendo el `scrollTop` real (no un transform virtual), así
+  que el listener existente sigue recibiendo eventos válidos sin cambios.
+- Guardado detrás de `animGsap.gsapListo && !animGsap.reducida`, igual criterio que el
+  resto de la infraestructura GSAP.
+- **Pendiente de Fase 6:** verificar en dispositivo real que el flujo de
+  RSVP/WhatsApp no se vio afectado (no debería, son solo `<a>` sin lógica de scroll).
 
 ## Fase 3 — Migrar el sistema de "reveal" a GSAP ScrollTrigger
 
