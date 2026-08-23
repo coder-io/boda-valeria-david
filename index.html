@@ -129,6 +129,12 @@ tailwind.config = {
     will-change: opacity, transform, filter;
   }
 
+  /* Cuando GSAP lleva el reveal (ver JS), la transición de arriba se
+     desactiva: si no, cada frame que GSAP escribe sobre opacity/
+     transform/filter dispararía además una transición CSS sobre esos
+     mismos valores, compitiendo con la interpolación de GSAP. */
+  html.gsap-reveal .reveal { transition: none; }
+
   /* Estado inicial de cada variante */
   [data-efecto="abajo"]      .reveal { transform: translateY(-140px) scale(.88); }
   [data-efecto="arriba"]     .reveal { transform: translateY(140px) scale(.88); }
@@ -1864,34 +1870,141 @@ const FORMAS = [
 })();
 
 /* ═══════════════════════════════════════════════════════════════
-   Animaciones de entrada (fade down)
-   Los contenedores marcados con data-stagger convierten a sus hijos
-   en elementos animados y los sueltan uno tras otro.
+   Animaciones de entrada
+   Con GSAP disponible, cada .reveal se anima con ScrollTrigger; sin
+   GSAP (CDN caído) o con prefers-reduced-motion, sigue corriendo tal
+   cual el sistema original: transición CSS + IntersectionObserver.
    ═══════════════════════════════════════════════════════════════ */
 
-// Los hijos de las grillas entran escalonados
+// Los hijos de las grillas entran escalonados; marcarlos .reveal ya
+// mismo evita que se vean sin ocultar antes de que corra lo de abajo.
 $$('[data-stagger]').forEach(cont => {
-  [...cont.children].forEach((hijo, i) => {
-    hijo.classList.add('reveal');
-    hijo.style.transitionDelay = Math.min(i * 130, 780) + 'ms';
+  [...cont.children].forEach(hijo => hijo.classList.add('reveal'));
+});
+
+if (animGsap.gsapListo && !animGsap.reducida) {
+  document.documentElement.classList.add('gsap-reveal');
+
+  // Cada data-efecto, traducido a los valores de arranque que ya
+  // tenía en CSS más arriba, para que el resultado visual sea el
+  // mismo aunque ahora lo mueva GSAP.
+  const EFECTOS = {
+    abajo:      { y: -140, scale: .88,                filter: 'blur(12px)' },
+    arriba:     { y:  140, scale: .88,                filter: 'blur(12px)' },
+    izquierda:  { x: -170, rotation: -3,               filter: 'blur(12px)' },
+    derecha:    { x:  170, rotation:  3,               filter: 'blur(12px)' },
+    zoom:       { scale: .5,                           filter: 'blur(16px)' },
+    alejar:     { scale: 1.4,                          filter: 'blur(20px)' },
+    inclinar:   { y: -100, rotation: -9, scale: .9,    filter: 'blur(12px)' },
+    enfoque:    { scale: 1.08,                         filter: 'blur(32px)' },
+    desplegar:  { rotationX: -88, y: -30, transformPerspective: 1200,
+                  transformOrigin: 'top center',       filter: 'blur(12px)' },
+    cortina:    { y: -40, clipPath: 'inset(0% 0% 100% 0%)', filter: 'none' },
+  };
+  // Estado final común: se especifica siempre explícito (fromTo, no
+  // from) porque el CSS ya deja el elemento oculto en el arranque de
+  // su variante; si dejáramos que GSAP infiriera el destino leyendo
+  // el estilo actual, destino y origen coincidirían y no se vería
+  // ningún movimiento.
+  const FINAL = { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0, rotationX: 0,
+                  filter: 'none', clipPath: 'inset(0% 0% 0% 0%)' };
+
+  const inicioReveal = el => ({
+    opacity: 0,
+    ...(EFECTOS[el.closest('[data-efecto]')?.dataset.efecto] || EFECTOS.abajo),
   });
-});
 
-const obs = new IntersectionObserver(es => es.forEach(en => {
-  if (en.isIntersecting) { en.target.classList.add('visible'); obs.unobserve(en.target); }
-// Dispara en cuanto el bloque asoma 90 px, para que el recorrido
-// completo ocurra a la vista y no a medias.
-}), { threshold: 0, rootMargin: '0px 0px -120px 0px' });
+  // El panel de padrinos mide 0px mientras está cerrado: sus propios
+  // .reveal se excluyen del barrido automático (se animan a mano más
+  // abajo, al abrirlo) para no dejar un ScrollTrigger mal medido.
+  const dentroDePadrinos = el => !!el.closest('#padrinosPanel');
 
-$$('.reveal').forEach(el => obs.observe(el));
+  $$('.reveal')
+    .filter(el => !dentroDePadrinos(el) && !el.closest('[data-stagger]'))
+    .forEach(el => {
+      if (el.classList.contains('orla-caja')) {
+        // No anima transform/opacity (el CSS ya la deja siempre
+        // visible); solo dispara el trazo que se dibuja solo, vía
+        // la transición existente en .orla-caja.visible .tz > *.
+        ScrollTrigger.create({
+          trigger: el, start: 'top bottom-=120', once: true,
+          onEnter: () => el.classList.add('visible'),
+        });
+        return;
+      }
+      gsap.fromTo(el, inicioReveal(el), {
+        ...FINAL,
+        duration: 1.2,
+        ease: 'power3.out',
+        clearProps: 'all',
+        onComplete: () => el.classList.add('visible'),
+        scrollTrigger: { trigger: el, start: 'top bottom-=120', once: true },
+      });
+    });
 
-/* El contenido del collapse mide 0 px mientras está cerrado, así que
-   nunca llega a cruzar el umbral del observador. Al abrirlo lo
-   mostramos a mano, escalonado igual que el resto. */
-btnPadrinos.addEventListener('click', () => {
-  if (!panelPadrinos.classList.contains('abierto')) return;
-  $$('.reveal', panelPadrinos).forEach(el => el.classList.add('visible'));
-});
+  $$('[data-stagger]').filter(cont => !dentroDePadrinos(cont)).forEach(cont => {
+    const hijos = [...cont.children];
+    if (!hijos.length) return;
+    gsap.fromTo(hijos, inicioReveal(cont), {
+      ...FINAL,
+      duration: 1.1,
+      ease: 'power3.out',
+      stagger: .13,
+      clearProps: 'all',
+      onComplete: () => hijos.forEach(h => h.classList.add('visible')),
+      scrollTrigger: { trigger: cont, start: 'top bottom-=120', once: true },
+    });
+  });
+
+  // Contenido de padrinos: se anima a mano al abrir el panel, una
+  // sola vez —mientras está cerrado mide 0px, así que un
+  // ScrollTrigger normal lo mediría mal—.
+  let padrinosAnimados = false;
+  const revealesPadrinos = $$('.reveal', panelPadrinos);
+  btnPadrinos.addEventListener('click', () => {
+    if (!panelPadrinos.classList.contains('abierto') || padrinosAnimados || !revealesPadrinos.length) return;
+    padrinosAnimados = true;
+    gsap.fromTo(revealesPadrinos, inicioReveal(panelPadrinos), {
+      ...FINAL,
+      duration: 1.1,
+      ease: 'power3.out',
+      stagger: .13,
+      clearProps: 'all',
+      onComplete: () => revealesPadrinos.forEach(el => el.classList.add('visible')),
+    });
+  });
+
+  // Abrir/cerrar el panel cambia el alto real de todo lo que viene
+  // después de él; sin este refresh, ScrollTrigger seguiría midiendo
+  // con las posiciones de antes del cambio.
+  panelPadrinos.addEventListener('transitionend', e => {
+    if (e.propertyName === 'grid-template-rows') ScrollTrigger.refresh();
+  });
+
+} else {
+  // Sistema original, sin cambios: transición CSS + IntersectionObserver.
+  $$('[data-stagger]').forEach(cont => {
+    [...cont.children].forEach((hijo, i) => {
+      hijo.style.transitionDelay = Math.min(i * 130, 780) + 'ms';
+    });
+  });
+
+  const obs = new IntersectionObserver(es => es.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add('visible'); obs.unobserve(en.target); }
+  // Dispara en cuanto el bloque asoma 90 px, para que el recorrido
+  // completo ocurra a la vista y no a medias.
+  }), { threshold: 0, rootMargin: '0px 0px -120px 0px' });
+
+  $$('.reveal').forEach(el => obs.observe(el));
+
+  /* El contenido del collapse mide 0 px mientras está cerrado, así que
+     nunca llega a cruzar el umbral del observador. Al abrirlo lo
+     mostramos a mano, escalonado igual que el resto. */
+  btnPadrinos.addEventListener('click', () => {
+    if (!panelPadrinos.classList.contains('abierto')) return;
+    $$('.reveal', panelPadrinos).forEach(el => el.classList.add('visible'));
+  });
+}
 </script>
 
 </body>
