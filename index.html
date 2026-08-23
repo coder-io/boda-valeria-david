@@ -313,15 +313,15 @@ tailwind.config = {
 <section id="padres" class="py-24 px-6 bg-fondo" data-efecto="abajo" data-pose="abrazo">
   <div class="max-w-4xl mx-auto space-y-16">
     <div class="text-center reveal">
-      <p class="font-serif text-2xl sm:text-3xl italic font-light" data-bind="padres.dedicatoriaNovia"></p>
-      <div class="linea-orn my-6 text-acento"><span class="text-xs">❦</span></div>
-      <ul id="padresNovia" class="font-serif text-2xl sm:text-3xl font-light space-y-1"></ul>
-    </div>
-
-    <div class="text-center reveal">
       <p class="font-serif text-2xl sm:text-3xl italic font-light" data-bind="padres.dedicatoriaNovio"></p>
       <div class="linea-orn my-6 text-acento"><span class="text-xs">❦</span></div>
       <ul id="padresNovio" class="font-serif text-2xl sm:text-3xl font-light space-y-1"></ul>
+    </div>
+
+    <div class="text-center reveal">
+      <p class="font-serif text-2xl sm:text-3xl italic font-light" data-bind="padres.dedicatoriaNovia"></p>
+      <div class="linea-orn my-6 text-acento"><span class="text-xs">❦</span></div>
+      <ul id="padresNovia" class="font-serif text-2xl sm:text-3xl font-light space-y-1"></ul>
     </div>
 
     <!-- Puerta de entrada a la sección de padrinos -->
@@ -349,12 +349,7 @@ tailwind.config = {
             <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
           </div>
 
-          <div id="padrinos" data-stagger class="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 text-center"></div>
-
-          <div class="mt-16 text-center reveal">
-            <p class="font-serif text-xl sm:text-2xl italic font-light max-w-2xl mx-auto" data-bind="padrinos.abuelos"></p>
-            <ul id="abuelos" class="mt-5 font-serif text-2xl font-light space-y-1"></ul>
-          </div>
+          <div id="padrinos" data-stagger class="mt-14 flex flex-wrap justify-center gap-x-8 gap-y-20 text-center"></div>
         </div>
       </div>
     </div>
@@ -725,7 +720,7 @@ const CONFIG = {
   fechaISO:   '2027-04-24T17:00:00',
   fecha:      { dia: 'sábado', numero: '24', mes: 'Abril', anio: '2027' },
   fechaLarga: '24 de abril de 2027',
-  lugarCorto: 'Huasca de Ocampo · Hidalgo',
+  lugarCorto: 'San Pedro Huaquilpan · Hidalgo',
   hashtag:    '#ValeriaYDavid2027',
 
   frasePortada: '"Contigo aprendí que existen nuevas y mejores emociones. Contigo aprendí a conocer un mundo nuevo de ilusiones"',
@@ -740,22 +735,19 @@ const CONFIG = {
     dedicatoriaNovia: 'Gracias a mis padres por guiarme y acompañarme',
     dedicatoriaNovio: 'Gracias a mis padres por enseñarme el camino',
   },
-  padresNovia: ['Nombre Apellido Apellido', 'Nombre Apellido Apellido'],
-  padresNovio: ['Nombre Apellido Apellido', 'Nombre Apellido Apellido'],
+  padresNovia: ['Luis Miguel Mendoza Acosta', 'Verónica Morales Olivares'],
+  padresNovio: ['María Romero de la Rosa', 'Nicodemus Aurelio Valencia ✝'],
 
   padrinos: {
     intro:   'Juntos para siempre, en compañía de nuestros padres y padrinos',
-    abuelos: 'Abuelos, gracias por ser nuestros segundos padres y ahora nuestros padrinos de bodas',
     lista: [
-      { rol: 'Padrinos de velación', nombres: ['Nombre Apellido', 'Nombre Apellido'] },
-      { rol: 'Padrinos de lazo',     nombres: ['Nombre Apellido', 'Nombre Apellido'] },
-      { rol: 'Padrinos de anillos',  nombres: ['Nombre Apellido', 'Nombre Apellido'] },
-      { rol: 'Padrinos de arras',    nombres: ['Nombre Apellido', 'Nombre Apellido'] },
-      { rol: 'Padrinos de ramo',     nombres: ['Nombre Apellido', 'Nombre Apellido'] },
-      { rol: 'Padrinos de honor',    nombres: ['Nombre Apellido', 'Nombre Apellido'] },
+      { rol: 'Padrinos de velación', nombres: ['Leonor Acosta Cruz', 'Valentín Gutiérrez Santillán'] },
+      { rol: 'Padrinos de lazo',     nombres: ['Elhy Raquel Valencia Romero', 'Cristian Mendoza Morales'] },
+      { rol: 'Padrinos de anillos',  nombres: ['Josefina Fernández', 'José Luis Valencia Romero'] },
+      { rol: 'Padrinos de arras',    nombres: ['María Teresa Santillán Acosta', 'Ciro Daniel Roa Rocha'] },
+      { rol: 'Padrino de ramo',      nombres: ['Luis Fernando Mendoza Morales'] },
     ],
   },
-  abuelos: ['Nombre Apellido Apellido', 'Nombre Apellido Apellido'],
 
   itinerario: [
     { hora: '5:00 pm',  tipo: 'Ceremonia religiosa', lugar: 'Capilla de la hacienda', dir: 'Llega 20 minutos antes, por favor.' },
@@ -770,13 +762,13 @@ const CONFIG = {
 
   lugares: [
     { tipo: 'Ceremonia religiosa', nombre: 'Capilla de la hacienda', icono: '⛪', hora: '17:00 h',
-      direccion: 'Carretera Huasca–San Miguel Regla km 4, Huasca de Ocampo, Hgo.',
-      maps: 'https://maps.google.com/?q=Huasca+de+Ocampo+Hidalgo' },
-    { tipo: 'Recepción', nombre: 'Jardín y patio central', icono: '❦', hora: '19:00 h',
-      direccion: 'En la misma hacienda — no necesitas moverte',
-      maps: 'https://maps.google.com/?q=Huasca+de+Ocampo+Hidalgo' },
+      direccion: 'Restaurante & Salón San Pedro Huaquilpan, Hgo.',
+      maps: 'https://maps.app.goo.gl/rXhEXihU9Q8Ko2Pt9' },
+    { tipo: 'Recepción', nombre: 'Salón Terraza', icono: '❦', hora: '19:00 h',
+      direccion: 'En el mismo salón — no necesitas moverte',
+      maps: 'https://maps.app.goo.gl/rXhEXihU9Q8Ko2Pt9' },
   ],
-  mapaEmbed: 'https://www.google.com/maps?q=Huasca+de+Ocampo,+Hidalgo&output=embed',
+  mapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5951.736411810861!2d-98.86172571347183!3d19.99345089060832!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d198c33587778d%3A0x73a6298be15e4c09!2sRestaurante%20%26%20Sal%C3%B3n%20San%20Pedro%20Huaquilpan!5e0!3m2!1ses!2smx!4v1787447514280!5m2!1ses!2smx',
 
   dressCode: {
     titulo: 'Formal',
@@ -800,8 +792,8 @@ const CONFIG = {
   hospedaje: {
     intro: 'Gracias por tomarte el tiempo de venir a nuestra boda desde tu ciudad. Seleccionamos algunos lugares para que puedas estar cerca del evento.',
     hoteles: [
-      { nombre: 'Hotel Hacienda sede', dir: 'En el mismo lugar del evento · cupo limitado', precio: 'desde $2,600 MXN', cta: 'Cotizar hotel', url: '#' },
-      { nombre: 'Cabañas en Huasca',   dir: 'Centro del Pueblo Mágico · 10 min del evento', precio: 'desde $1,500 MXN', cta: 'Cotizar hotel', url: '#' },
+      { nombre: 'Hotel Plaza Pachuca', dir: 'Pachuca, Hgo.', precio: '', cta: 'Ver en Maps', url: 'https://maps.app.goo.gl/xdj86Bv9YfStToM17' },
+      { nombre: 'Hotel Real Zapotlán', dir: 'Pachuca, Hgo.', precio: '', cta: 'Ver en Maps', url: 'https://maps.app.goo.gl/rc1vES29iwP78fBX8' },
     ],
     comoLlegar: [
       'Desde CDMX en auto: 1 h 45 min por la México–Pachuca.',
@@ -932,10 +924,9 @@ $('#btnCalendario').addEventListener('click', () => {
 const lista = arr => arr.map(n => `<li>${n}</li>`).join('');
 $('#padresNovia').innerHTML = lista(CONFIG.padresNovia);
 $('#padresNovio').innerHTML = lista(CONFIG.padresNovio);
-$('#abuelos').innerHTML     = lista(CONFIG.abuelos);
 
 $('#padrinos').innerHTML = CONFIG.padrinos.lista.map(p => `
-  <div>
+  <div class="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.334rem)]">
     <p class="font-sans text-[10px] tracking-[.3em] uppercase text-acento2">${p.rol}</p>
     <div class="linea-orn my-4 text-linea"><span class="text-[10px]">◈</span></div>
     ${p.nombres.map(n => `<p class="font-serif text-xl font-light">${n}</p>`).join('')}
@@ -994,7 +985,7 @@ $('#hoteles').innerHTML = CONFIG.hospedaje.hoteles.map(h => `
   <div class="bg-fondo2 border border-linea p-9 text-center reveal">
     <p class="font-serif text-2xl font-light">${h.nombre}</p>
     <p class="mt-3 text-sm text-tinta/65 leading-relaxed">${h.dir}</p>
-    <p class="mt-4 font-serif text-xl text-acento2">${h.precio}</p>
+    ${h.precio ? `<p class="mt-4 font-serif text-xl text-acento2">${h.precio}</p>` : ''}
     <a href="${h.url}" target="_blank" rel="noopener"
        class="mt-6 inline-block border border-acento2 text-acento2 px-6 py-2.5 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-acento2 hover:text-fondo transition-colors duration-500">${h.cta}</a>
   </div>
@@ -1015,8 +1006,7 @@ const btnPadrinos   = $('#btnPadrinos');
 
 // Pista de contenido, calculada de los datos reales
 const nPadrinos = CONFIG.padrinos.lista.length;
-$('#pistaPadrinos').textContent =
-  `${nPadrinos} padrinos${CONFIG.abuelos.length ? ' y nuestros abuelos' : ''}`;
+$('#pistaPadrinos').textContent = `${nPadrinos} padrinos`;
 
 function abrirPadrinos(hacerScroll = true) {
   panelPadrinos.classList.add('abierto');
