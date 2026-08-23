@@ -51,6 +51,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
+<!-- Lenis, versión fijada. Igual que GSAP: sin defer y con guard de
+     `window.Lenis` antes de usarla, para no dejar el sitio en blanco
+     si el CDN falla. -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Great+Vibes&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
@@ -90,6 +95,13 @@ tailwind.config = {
   }
 
   html { scroll-behavior: smooth; }
+
+  /* Cuando Lenis anima un scroll suave añade esta clase a <html>: se
+     desactiva el smooth-scroll nativo mientras dura, para que no
+     compitan los dos motores por el mismo scroll. Fuera de esos
+     momentos (y si Lenis nunca arranca) el scroll-behavior de arriba
+     sigue intacto, p. ej. para el ancla de la portada sin JS. */
+  html.lenis-smooth { scroll-behavior: auto !important; }
 
   /* Los desplazamientos laterales de entrada sacan bloques del ancho
      de pantalla; sin esto aparecería scroll horizontal. clip antes que
@@ -965,6 +977,34 @@ if (animGsap.gsapListo) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   Scroll suave en desktop (Lenis)
+   `syncTouch` queda en false a propósito: en touch el scroll nativo
+   ya trae su propia inercia corriendo en el hilo de composición, y
+   activar el modo táctil de Lenis lo movería al hilo principal —peor
+   rendimiento y batería, y rompe cosas nativas como el
+   pull-to-refresh—. Así que en mobile este bloque no toca el scroll
+   continuo en absoluto; lo único que se usa ahí también es
+   `lenis.scrollTo()` más abajo, que sí funciona bien en cualquier
+   dispositivo porque anima un destino puntual sin interceptar cada
+   gesto.
+   ═══════════════════════════════════════════════════════════════ */
+let lenis = null;
+if (animGsap.gsapListo && typeof window.Lenis !== 'undefined' && !animGsap.reducida) {
+  lenis = new Lenis({ syncTouch: false });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(time => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  // Único enlace de ancla real del sitio: sin esto, mientras Lenis
+  // anima, `scroll-behavior:smooth` queda desactivado (ver CSS) y el
+  // salto se sentiría instantáneo en vez de suave.
+  $('a[href="#padres"]')?.addEventListener('click', e => {
+    e.preventDefault();
+    lenis.scrollTo('#padres');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Parallax de portada
    La foto se escala un poco de más (vía gsap.set, para que el motor
    la tome como base de su propio transform) y se desplaza despacio
@@ -1281,14 +1321,23 @@ function abrirPadrinos(hacerScroll = true) {
   if (!hacerScroll) return;
   const suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Espera a que la altura termine de animar para no perseguir un blanco móvil
-  setTimeout(() => $('#seccionPadrinos').scrollIntoView({
-    behavior: suave ? 'smooth' : 'auto', block: 'start' }), 380);
+  setTimeout(() => {
+    if (lenis) lenis.scrollTo('#seccionPadrinos');
+    else $('#seccionPadrinos').scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'start' });
+  }, 380);
 }
 
 function cerrarPadrinos() {
   panelPadrinos.classList.remove('abierto');
   btnPadrinos.setAttribute('aria-expanded', 'false');
-  btnPadrinos.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (lenis) {
+    // Reproduce el centrado de scrollIntoView({block:'center'}): el
+    // offset de Lenis se suma al top del elemento, así que hay que
+    // restarle la mitad del sobrante de viewport.
+    lenis.scrollTo(btnPadrinos, { offset: btnPadrinos.offsetHeight / 2 - window.innerHeight / 2 });
+  } else {
+    btnPadrinos.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 btnPadrinos.addEventListener('click', () =>
