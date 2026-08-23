@@ -438,7 +438,7 @@ tailwind.config = {
     <!-- Puerta de entrada a la sección de padrinos -->
     <div class="text-center reveal pt-4">
       <button id="btnPadrinos" type="button" aria-expanded="false" aria-controls="padrinosPanel"
-              class="group inline-flex items-center gap-4 border border-linea bg-fondo2 px-8 sm:px-10 py-5 hover:border-acento transition-colors duration-500">
+              class="group flex items-center justify-between gap-4 w-full max-w-md mx-auto border border-linea bg-fondo2 px-8 sm:px-10 py-5 hover:border-acento transition-colors duration-500">
         <span class="text-left">
           <span class="block font-sans text-[10px] tracking-[.3em] uppercase text-acento2">Agradecimiento a mis padrinos</span>
           <span id="pistaPadrinos" class="block mt-1.5 font-serif text-sm italic text-tinta/55"></span>
@@ -1862,7 +1862,7 @@ const FORMAS = [
   // En mobile los mismos tamaños se ven desproporcionados (ocupan
   // más pantalla relativa): se escalan hacia abajo, no se cambia el
   // diseño de los tres planos.
-  const escalaTam = () => anchoMovil() ? .68 : 1;
+  const escalaTam = () => anchoMovil() ? .5 : 1;
 
   function elegirPlano() {
     let r = Math.random() * PESO_TOTAL;
