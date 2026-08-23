@@ -36,8 +36,8 @@ El plan original iba 1→6, pero ese orden no coincide con el de riesgo/valor. O
 | 1 | Fase 0 — Salvaguardas | — | — | — | ✅ Hecho |
 | 2 | Fase 2 — Pétalos ambientales | Alto | Bajo | nada (ni GSAP) | ✅ Hecho |
 | 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 | ✅ Hecho |
-| 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | ⏳ Siguiente |
-| 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | Pendiente |
+| 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | ✅ Hecho |
+| 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | ⏳ Siguiente (decisión pendiente) |
 | 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | Pendiente |
 | 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | Pendiente |
 | 8 | Fase 6 — Rendimiento y pruebas | — | — | todas | Pendiente |
@@ -112,11 +112,22 @@ Implementada en `51d53fb`.
   de esta fase — pendiente solo la prueba real de "bloquear el CDN en DevTools" que
   corresponde formalmente a la Fase 6.
 
-## Fase 5a — Parallax de portada
+## Fase 5a — Parallax de portada — ✅ Completada
 
-- Micro-parallax de la imagen de fondo de la portada ligado al scroll. Valor alto,
-  riesgo bajo, no toca el sistema de reveals.
-- Es la fase que justifica o descarta Lenis (ver Fase 4).
+Implementada en `09df0e2`.
+
+- `<section>` de portada e `<img>` con `id="portada"` / `id="imgPortada"` para poder
+  apuntarles desde GSAP sin tocar el resto del marcado.
+- `gsap.set(imgPortada, { scale: 1.15 })` como base, para que GSAP registre la
+  escala en su propio transform antes de animar `yPercent: 12` con `scrub: true`
+  ligado a `ScrollTrigger` (`start: 'top top'`, `end: 'bottom top'`). El
+  `overflow-hidden` que ya tenía la sección recorta el sobrante de la imagen
+  escalada, así el desplazamiento nunca revela un borde vacío.
+- Guardado detrás de `animGsap.gsapListo && !animGsap.reducida`: si el CDN de
+  GSAP falla o hay `prefers-reduced-motion`, la portada queda estática, igual que
+  antes de esta fase.
+- **Ahora sí se decide sobre Lenis** (ver Fase 4): con este parallax en producción,
+  hay algo real que Lenis puede suavizar en desktop.
 
 ## Fase 4 — Lenis, condicionado a desktop
 
