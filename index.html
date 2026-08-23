@@ -7,7 +7,7 @@
 <meta name="description" content="Nos casamos. Acompáñanos el 24 de abril de 2027 en Huasca de Ocampo, Hidalgo.">
 
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#1E2C16">
+<meta name="theme-color" content="#14100F">
 
 <!-- Vista previa al compartir el enlace (WhatsApp, Facebook, iMessage…).
      IMPORTANTE: sustituye TU-USUARIO y TU-REPO por los tuyos cuando
@@ -28,11 +28,12 @@
        3. Agradecimiento a los padrinos (boda3)
        4. Cuenta regresiva + invitación formal (boda3 ampliado)
        5. Itinerario con barra de progreso de scroll (boda3 + nuevo)
-       6. Vestimenta y regalos (boda3)
-       7. Ceremonia y recepción (index)
-       8. Sugerencia de hospedaje (boda3)
-       9. Confirmación + agradecimiento final (boda3 + index)
-      10. Pie (boda2)
+       6. Código de vestimenta (boda3)
+       7. Sugerencia de regalos (boda3)
+       8. Ceremonia y recepción (index)
+       9. Sugerencia de hospedaje (boda3)
+      10. Confirmación + agradecimiento final (boda3 + index)
+      11. Pie (boda2)
 
      COLOR: el tema no usa colores fijos sino tokens semánticos
      (fondo, tinta, profundo, acento…) conectados a variables CSS.
@@ -71,11 +72,12 @@ tailwind.config = {
 </script>
 
 <style>
-  /* Paleta inicial: Arena. El selector sobreescribe estas variables. */
+  /* Paleta inicial: Borgoña (marfil · negro · borgoña, los colores
+     elegidos por los novios). El selector sobreescribe estas variables. */
   :root {
-    --c-bg: 250 248 245;  --c-bg2: 243 239 232; --c-line: 227 220 206;
-    --c-ink: 47 41 29;    --c-deep: 39 31 17;   --c-deep2: 82 67 40;
-    --c-soft: 204 191 168; --c-accent: 214 170 81; --c-accent2: 129 92 19;
+    --c-bg: 251 248 243;  --c-bg2: 244 237 231; --c-line: 229 214 210;
+    --c-ink: 34 26 26;    --c-deep: 20 16 15;   --c-deep2: 90 18 32;
+    --c-soft: 214 184 188; --c-accent: 195 107 119; --c-accent2: 122 18 38;
   }
 
   html { scroll-behavior: smooth; }
@@ -155,6 +157,58 @@ tailwind.config = {
   .hojas-tinta {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23000000' stroke-width='1.1'%3E%3Cpath d='M70 22c0 18-10 30-10 46s10 26 10 40'/%3E%3Cpath d='M70 40c-9-7-18-5-23-12M70 40c9-7 18-5 23-12M70 62c-10-7-20-5-25-13M70 62c10-7 20-5 25-13M70 84c-9-7-18-5-23-12M70 84c9-7 18-5 23-12'/%3E%3C/g%3E%3C/svg%3E");
     background-size: 140px 140px;
+  }
+
+
+  /* ─────────────────────────────────────────────────────────────
+     ORLAS FLORALES — trazo negro, sin relleno.
+       .orla-caja  separador horizontal entre secciones; se dibuja
+                   solo al entrar en pantalla (stroke-dashoffset).
+       .orla-lado  enredadera vertical en los costados; es un mosaico
+                   que se repite, así se adapta a cualquier alto.
+     El trazo usa currentColor, de modo que la orla toma el color de
+     la sección: tinta sobre marfil, marfil sobre negro.
+     ───────────────────────────────────────────────────────────── */
+  .orla { display: block; width: min(430px, 82%); height: auto; margin: 0 auto; }
+
+  /* En pantalla estrecha la guirnalda larga se vuelve un hilo ilegible,
+     así que ahí entra una versión compacta: la misma rosa central y una
+     rama por lado, con el trazo más grueso para que se aprecie. */
+  .orla-mini { display: none; }
+  @media (max-width: 640px) {
+    .orla-ancha { display: none; }
+    .orla-mini  { display: block; width: 90%; }
+  }
+
+  /* El separador no entra desplazándose: se dibuja trazo a trazo. */
+  .orla-caja.reveal { opacity: 1; transform: none; filter: none; clip-path: none; }
+  .orla-caja .tz > * { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .orla-caja.visible .tz > * {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.7s cubic-bezier(.16,.9,.36,1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orla-caja .tz > * { stroke-dashoffset: 0; transition: none; }
+  }
+
+  .orla-lado {
+    position: absolute; top: -40px; bottom: -40px; width: 54px;
+    background-repeat: repeat-y; background-position: top center;
+    background-size: 54px 184px;
+    opacity: .26; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22340%22 viewBox=%220 0 100 340%22%3E %3Cg fill=%22none%22 stroke=%22%2314100F%22 stroke-width=%221.6%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E %3Cpath d=%22M28 0C28 58 72 92 70 168C68 246 28 282 28 340%22/%3E %3C%21-- hojas eucalipto alternadas --%3E %3Cellipse cx=%2246%22 cy=%2230%22 rx=%2212%22 ry=%227%22 transform=%22rotate(38 46 30)%22/%3E %3Cellipse cx=%2218%22 cy=%2256%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(-28 18 56)%22/%3E %3Cellipse cx=%2262%22 cy=%2274%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(52 62 74)%22/%3E %3Cellipse cx=%2244%22 cy=%22112%22 rx=%2210%22 ry=%226%22 transform=%22rotate(-14 44 112)%22/%3E %3Cellipse cx=%2286%22 cy=%22130%22 rx=%2210%22 ry=%226%22 transform=%22rotate(24 86 130)%22/%3E %3Cellipse cx=%2246%22 cy=%22212%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(22 46 212)%22/%3E %3Cellipse cx=%2266%22 cy=%22252%22 rx=%2210%22 ry=%226%22 transform=%22rotate(-40 66 252)%22/%3E %3Cellipse cx=%2214%22 cy=%22266%22 rx=%2210%22 ry=%226%22 transform=%22rotate(34 14 266)%22/%3E %3Cellipse cx=%2244%22 cy=%22308%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(-36 44 308)%22/%3E %3C%21-- rosa --%3E %3Cg transform=%22translate(66,170) scale(1.05)%22%3E %3Cpath d=%22M2 1a3.2 3.2 0 1 0-3.4-2.6a6.4 6.4 0 1 0 7.6 6.4a10 10 0 1 0-11.6-9.6%22/%3E %3Cpath d=%22M-5.4-4.8A11 11 0 0 1 9-7%22/%3E %3Cpath d=%22M11 9.4A13.5 13.5 0 0 0 13-6%22/%3E %3Cpath d=%22M-9 8.6a14 14 0 0 0 16 5.4%22/%3E %3Cpath d=%22M-13-3.6A15 15 0 0 0-10 10%22/%3E %3C/g%3E %3C%21-- capullo --%3E %3Cg transform=%22translate(24,96) rotate(-32) scale(.85)%22%3E %3Cpath d=%22M0-14c6 4 8 12 4 18c-1 2-5 2-7 0c-4-6-2-14 3-18Z%22/%3E %3Cpath d=%22M-3 4c-3 1-5 4-4 7c3 1 6-1 7-4%22/%3E %3Cpath d=%22M2 4c3 1 5 4 4 7c-3 1-6-1-7-4%22/%3E %3Cpath d=%22M0 6v10%22/%3E %3C/g%3E %3C%21-- flor pequena --%3E %3Cg transform=%22translate(38,250) scale(.55)%22%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(-90)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(-18)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(54)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(126)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(198)%22/%3E %3Ccircle r=%223.4%22/%3E %3C/g%3E %3C/g%3E %3C/svg%3E");
+  }
+  .orla-lado.der { right: 0; transform: scaleX(-1); }
+  .orla-lado.izq { left: 0; }
+  .orla-lado.clara { opacity: .2; background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22340%22 viewBox=%220 0 100 340%22%3E %3Cg fill=%22none%22 stroke=%22%23FBF8F3%22 stroke-width=%221.6%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E %3Cpath d=%22M28 0C28 58 72 92 70 168C68 246 28 282 28 340%22/%3E %3C%21-- hojas eucalipto alternadas --%3E %3Cellipse cx=%2246%22 cy=%2230%22 rx=%2212%22 ry=%227%22 transform=%22rotate(38 46 30)%22/%3E %3Cellipse cx=%2218%22 cy=%2256%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(-28 18 56)%22/%3E %3Cellipse cx=%2262%22 cy=%2274%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(52 62 74)%22/%3E %3Cellipse cx=%2244%22 cy=%22112%22 rx=%2210%22 ry=%226%22 transform=%22rotate(-14 44 112)%22/%3E %3Cellipse cx=%2286%22 cy=%22130%22 rx=%2210%22 ry=%226%22 transform=%22rotate(24 86 130)%22/%3E %3Cellipse cx=%2246%22 cy=%22212%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(22 46 212)%22/%3E %3Cellipse cx=%2266%22 cy=%22252%22 rx=%2210%22 ry=%226%22 transform=%22rotate(-40 66 252)%22/%3E %3Cellipse cx=%2214%22 cy=%22266%22 rx=%2210%22 ry=%226%22 transform=%22rotate(34 14 266)%22/%3E %3Cellipse cx=%2244%22 cy=%22308%22 rx=%2211%22 ry=%226.5%22 transform=%22rotate(-36 44 308)%22/%3E %3C%21-- rosa --%3E %3Cg transform=%22translate(66,170) scale(1.05)%22%3E %3Cpath d=%22M2 1a3.2 3.2 0 1 0-3.4-2.6a6.4 6.4 0 1 0 7.6 6.4a10 10 0 1 0-11.6-9.6%22/%3E %3Cpath d=%22M-5.4-4.8A11 11 0 0 1 9-7%22/%3E %3Cpath d=%22M11 9.4A13.5 13.5 0 0 0 13-6%22/%3E %3Cpath d=%22M-9 8.6a14 14 0 0 0 16 5.4%22/%3E %3Cpath d=%22M-13-3.6A15 15 0 0 0-10 10%22/%3E %3C/g%3E %3C%21-- capullo --%3E %3Cg transform=%22translate(24,96) rotate(-32) scale(.85)%22%3E %3Cpath d=%22M0-14c6 4 8 12 4 18c-1 2-5 2-7 0c-4-6-2-14 3-18Z%22/%3E %3Cpath d=%22M-3 4c-3 1-5 4-4 7c3 1 6-1 7-4%22/%3E %3Cpath d=%22M2 4c3 1 5 4 4 7c-3 1-6-1-7-4%22/%3E %3Cpath d=%22M0 6v10%22/%3E %3C/g%3E %3C%21-- flor pequena --%3E %3Cg transform=%22translate(38,250) scale(.55)%22%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(-90)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(-18)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(54)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(126)%22/%3E %3Cpath d=%22M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z%22 transform=%22rotate(198)%22/%3E %3Ccircle r=%223.4%22/%3E %3C/g%3E %3C/g%3E %3C/svg%3E"); }
+  /* En el móvil la enredadera se afina y casi se desvanece: acompaña
+     sin estorbarle al texto. En el tramo intermedio el contenido ya
+     ocupa todo el ancho, así que ahí desaparece. */
+  @media (max-width: 640px) {
+    .orla-lado { width: 34px; background-size: 34px 116px; opacity: .18; }
+  }
+  @media (min-width: 641px) and (max-width: 1150px) {
+    .orla-lado { display: none; }
   }
 
   /* ---- Itinerario: enredadera que crece con el scroll ----
@@ -248,7 +302,7 @@ tailwind.config = {
   #novios .ojo          { fill: #2B2018; }
   #novios .velo         { fill: #FFFFFF; opacity: .75; }
   #novios .velo-flor    { fill: rgb(var(--c-accent)); }
-  #novios .mono         { fill: rgb(var(--c-accent)); }
+  #novios .mono         { fill: rgb(var(--c-deep2)); }
 
   /* Ojos cerrados: el círculo se aplasta hasta parecer una línea */
   #novios .ojo { transform-box: fill-box; transform-origin: center; transition: transform .4s ease; }
@@ -310,8 +364,10 @@ tailwind.config = {
 </section>
 
 <!-- ══════════ 2. PADRES ══════════ -->
-<section id="padres" class="py-24 px-6 bg-fondo" data-efecto="abajo" data-pose="abrazo">
-  <div class="max-w-4xl mx-auto space-y-16">
+<section id="padres" class="relative overflow-hidden py-24 px-6 bg-fondo" data-efecto="abajo" data-pose="abrazo" data-lados>
+  <div class="relative z-10 max-w-4xl mx-auto space-y-16">
+
+    <div class="orla-caja reveal text-tinta/45 -mt-4 mb-2" data-orla></div>
     <div class="text-center reveal">
       <p class="font-serif text-2xl sm:text-3xl italic font-light" data-bind="padres.dedicatoriaNovio"></p>
       <div class="linea-orn my-6 text-acento"><span class="text-xs">❦</span></div>
@@ -387,8 +443,9 @@ tailwind.config = {
 </section>
 
 <!-- ══════════ 5. ITINERARIO con progreso de scroll ══════════ -->
-<section class="py-24 px-6 bg-fondo" data-efecto="izquierda" data-pose="lista">
-  <div class="max-w-3xl mx-auto">
+<section class="relative overflow-hidden py-24 px-6 bg-fondo" data-efecto="izquierda" data-pose="lista" data-lados>
+  <div class="relative z-10 max-w-3xl mx-auto">
+    <div class="orla-caja reveal text-tinta/45 mb-14" data-orla></div>
     <div class="text-center reveal">
       <h2 class="font-serif text-3xl sm:text-4xl font-light italic">¡Acompáñanos en cada momento de nuestro gran día!</h2>
       <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
@@ -402,38 +459,52 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ══════════ 6. VESTIMENTA Y REGALOS ══════════ -->
-<section class="relative py-24 px-6 bg-hondo overflow-hidden" data-efecto="zoom" data-pose="gala">
+<!-- ══════════ 6. CÓDIGO DE VESTIMENTA ══════════ -->
+<section class="relative py-24 px-6 bg-hondo overflow-hidden" data-efecto="zoom" data-pose="gala" data-lados="clara">
   <div class="absolute inset-0 hojas opacity-[0.06]"></div>
-  <div class="relative z-10 max-w-5xl mx-auto text-fondo">
+  <div class="relative z-10 max-w-3xl mx-auto text-fondo">
+
+    <div class="orla-caja reveal text-fondo/55 mb-14" data-orla></div>
 
     <div class="text-center reveal">
-      <h2 class="font-serif text-3xl sm:text-4xl font-light">Código de vestimenta &amp; Sugerencia de regalos</h2>
+      <h2 class="font-serif text-3xl sm:text-4xl font-light">Código de vestimenta</h2>
       <div class="linea-orn mt-6 text-acento"><span class="text-xs">❦</span></div>
     </div>
 
-    <div class="mt-16 grid lg:grid-cols-2 gap-14">
-      <div class="text-center reveal">
-        <p class="font-script text-6xl text-acento" data-bind="dressCode.titulo"></p>
-        <p class="mt-6 font-serif text-xl font-light leading-relaxed" data-bind="dressCode.nota"></p>
-        <p class="mt-4 text-sm text-suave leading-relaxed" data-bind="dressCode.clima"></p>
+    <div class="mt-14 text-center reveal">
+      <p class="font-script text-6xl text-acento" data-bind="dressCode.titulo"></p>
+      <p class="mt-6 font-serif text-xl font-light leading-relaxed" data-bind="dressCode.nota"></p>
+      <p class="mt-4 text-sm text-suave leading-relaxed" data-bind="dressCode.clima"></p>
 
-        <div id="paleta" class="mt-8 flex justify-center gap-3 flex-wrap"></div>
+      <div id="paleta" class="mt-8 flex justify-center gap-3 flex-wrap"></div>
 
-        <a href="https://www.pinterest.com/search/pins/?q=boda%20hacienda%20formal%20jardin" target="_blank" rel="noopener"
-           class="mt-8 inline-block border border-fondo/40 px-6 py-2.5 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-fondo hover:text-hondo transition-colors duration-500">
-          Ver ideas en Pinterest
-        </a>
-      </div>
-
-      <div id="regalos" data-stagger class="space-y-6"></div>
+      <a href="https://www.pinterest.com/search/pins/?q=boda%20hacienda%20formal%20jardin" target="_blank" rel="noopener"
+         class="mt-8 inline-block border border-fondo/40 px-6 py-2.5 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-fondo hover:text-hondo transition-colors duration-500">
+        Ver ideas en Pinterest
+      </a>
     </div>
   </div>
 </section>
 
-<!-- ══════════ 7. CEREMONIA Y RECEPCIÓN ══════════ -->
+<!-- ══════════ 7. SUGERENCIA DE REGALOS ══════════ -->
+<section class="relative overflow-hidden py-24 px-6 bg-fondo" data-efecto="inclinar" data-pose="regalo" data-lados>
+  <div class="relative z-10 max-w-5xl mx-auto">
+
+    <div class="text-center reveal">
+      <h2 class="font-serif text-3xl sm:text-4xl font-light">Sugerencia de regalos</h2>
+      <div class="linea-orn mt-6 mb-8 text-acento"><span class="text-xs">❦</span></div>
+      <p class="max-w-2xl mx-auto font-serif text-xl font-light leading-relaxed" data-bind="regalosIntro"></p>
+    </div>
+
+    <div id="regalos" data-stagger class="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+  </div>
+</section>
+
+<!-- ══════════ 8. CEREMONIA Y RECEPCIÓN ══════════ -->
 <section id="evento" class="py-24 sm:py-28 px-6 bg-fondo2" data-efecto="cortina" data-pose="anillos">
   <div class="max-w-6xl mx-auto">
+
+    <div class="orla-caja reveal text-tinta/45 mb-14" data-orla></div>
 
     <div class="text-center reveal">
       <p class="font-sans text-[10px] tracking-[.4em] uppercase text-acento2">Dónde y cuándo</p>
@@ -453,9 +524,9 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ══════════ 8. HOSPEDAJE ══════════ -->
-<section class="py-24 px-6 bg-fondo" data-efecto="derecha" data-pose="dormir">
-  <div class="max-w-4xl mx-auto">
+<!-- ══════════ 9. HOSPEDAJE ══════════ -->
+<section class="relative overflow-hidden py-24 px-6 bg-fondo" data-efecto="derecha" data-pose="dormir" data-lados>
+  <div class="relative z-10 max-w-4xl mx-auto">
     <div class="text-center reveal">
       <h2 class="font-serif text-4xl sm:text-5xl font-light">Sugerencia de hospedaje</h2>
       <div class="linea-orn mt-6 mb-8 text-acento"><span class="text-xs">❦</span></div>
@@ -477,9 +548,11 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ══════════ 9. CONFIRMACIÓN ══════════ -->
+<!-- ══════════ 10. CONFIRMACIÓN ══════════ -->
 <section id="rsvp" class="py-24 px-6 bg-fondo2" data-efecto="enfoque" data-pose="sobre">
   <div class="max-w-lg mx-auto">
+
+    <div class="orla-caja reveal text-tinta/45 mb-14" data-orla></div>
 
     <div class="text-center reveal">
       <p class="font-sans text-[10px] tracking-[.4em] uppercase text-acento2">No nos dejes con la duda</p>
@@ -560,10 +633,10 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ══════════ 9b. AGRADECIMIENTO ══════════
+<!-- ══════════ 10b. AGRADECIMIENTO ══════════
      Cierre emocional. Se separa de la confirmación por fondo, textura,
      ancho de caja, escala tipográfica y un filete superior. -->
-<section id="gracias" class="relative py-32 sm:py-40 px-6 bg-fondo border-t border-linea overflow-hidden" data-efecto="alejar" data-pose="rezar">
+<section id="gracias" class="relative py-32 sm:py-40 px-6 bg-fondo border-t border-linea overflow-hidden" data-efecto="alejar" data-pose="rezar" data-lados>
   <div class="absolute inset-0 hojas-tinta opacity-[0.05]"></div>
 
   <div class="relative z-10 max-w-2xl mx-auto text-center reveal">
@@ -572,10 +645,12 @@ tailwind.config = {
     <div class="linea-orn my-8 text-acento"><span class="text-sm">❦</span></div>
 
     <p class="font-serif text-2xl sm:text-3xl leading-[1.6] font-light text-tinta/85" data-bind="agradecimiento"></p>
+
+    <div class="orla-caja reveal text-tinta/45 mt-14" data-orla></div>
   </div>
 </section>
 
-<!-- ══════════ 10. PIE ══════════ -->
+<!-- ══════════ 11. PIE ══════════ -->
 <!-- Se anima el contenido, no el <footer>: desplazarlo dejaría un hueco al final -->
 <footer data-stagger class="bg-hondo2 text-fondo py-16 px-6 text-center" data-efecto="inclinar" data-pose="adios">
   <p class="font-script text-5xl" data-bind="nombres"></p>
@@ -692,6 +767,11 @@ tailwind.config = {
    Cada una define los mismos nueve tokens semánticos.
    ═══════════════════════════════════════════════════════════════ */
 const PALETAS = [
+  /* Las tres primeras son los colores de los novios: marfil para ella,
+     negro y borgoña para él. El resto queda como alternativas. */
+  { nombre:'Borgoña', bg:'#FBF8F3', bg2:'#F4EDE7', line:'#E5D6D2', ink:'#221A1A', deep:'#14100F', deep2:'#5A1220', soft:'#D6B8BC', accent:'#C36B77', accent2:'#7A1226' },
+  { nombre:'Marfil & tinto', bg:'#FDFBF6', bg2:'#F6F0E6', line:'#E9DCCB', ink:'#2A2020', deep:'#1C1512', deep2:'#6E1B2B', soft:'#D8C3B4', accent:'#C9A227', accent2:'#8A1D30' },
+  { nombre:'Ónix', bg:'#F7F5F4', bg2:'#EDE9E8', line:'#DCD4D3', ink:'#1A1717', deep:'#0D0C0C', deep2:'#4A0F1B', soft:'#C4B4B6', accent:'#B34A5C', accent2:'#6B101F' },
   { nombre:'Arena', bg:'#FAF8F5', bg2:'#F3EFE8', line:'#E3DCCE', ink:'#2F291D', deep:'#271F11', deep2:'#524328', soft:'#CCBFA8', accent:'#D6AA51', accent2:'#815C13' },
   { nombre:'Bosque', bg:'#F7F9F6', bg2:'#ECF1E9', line:'#D7E1D0', ink:'#252F1E', deep:'#1B2414', deep2:'#3B4D2D', soft:'#B8C9AB', accent:'#DAB74E', accent2:'#836611' },
   { nombre:'Olivo', bg:'#F9F9F5', bg2:'#F0F2E9', line:'#DFE3CF', ink:'#2C2F1D', deep:'#222613', deep2:'#49502B', soft:'#C6CCA8', accent:'#D4BA54', accent2:'#7F6A15' },
@@ -772,16 +852,18 @@ const CONFIG = {
 
   dressCode: {
     titulo: 'Formal',
-    nota:   'Te pedimos amablemente reservar el color blanco para la novia.',
+    nota:   'Nuestros colores son el marfil, el negro y el borgoña. Te pedimos amablemente reservar el blanco y el marfil para la novia.',
     clima:  'Estamos a más de 2,000 metros de altura: de día hace calor, pero en la noche baja a unos 10 °C. Trae abrigo o chal. Para ellas, tacón de bloque — hay empedrado y pasto.',
     paleta: [
-      { nombre: 'Arena',        hex: '#E8DFC9' },
-      { nombre: 'Maíz',         hex: '#E3B23C' },
-      { nombre: 'Ocre',         hex: '#A5761A' },
-      { nombre: 'Verde encino', hex: '#5F7F4B' },
-      { nombre: 'Bosque',       hex: '#3D5730' },
+      { nombre: 'Marfil',   hex: '#F4EDE1' },
+      { nombre: 'Champán',  hex: '#D9C29A' },
+      { nombre: 'Rosa palo', hex: '#C89AA0' },
+      { nombre: 'Borgoña',  hex: '#7A1226' },
+      { nombre: 'Negro',    hex: '#14100F' },
     ],
   },
+
+  regalosIntro: 'Tu presencia es nuestro mejor regalo. Si además quieres tener un detalle con nosotros, aquí te dejamos algunas opciones.',
 
   regalos: [
     { titulo: 'Amazon',    lineas: ['Boda Valeria & David'],       cta: 'Ver regalos', url: 'https://www.amazon.com.mx/wedding/' },
@@ -833,6 +915,106 @@ $$('[data-bind]').forEach(el => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
+   ORLAS FLORALES
+   Se dibujan en SVG en vez de usar PNG: pesan poco, se ven nítidas
+   en cualquier pantalla y heredan el color de la sección con
+   currentColor. Cada pieza es una función para poder repetirla,
+   girarla y espejarla sin duplicar el trazo a mano.
+   ═══════════════════════════════════════════════════════════════ */
+const FLORA = {
+  rosa: t => `<g transform="${t}">
+    <path d="M2 1a3.2 3.2 0 1 0-3.4-2.6a6.4 6.4 0 1 0 7.6 6.4a10 10 0 1 0-11.6-9.6"/>
+    <path d="M-5.4-4.8A11 11 0 0 1 9-7"/>
+    <path d="M11 9.4A13.5 13.5 0 0 0 13-6"/>
+    <path d="M-9 8.6a14 14 0 0 0 16 5.4"/>
+    <path d="M-13-3.6A15 15 0 0 0-10 10"/></g>`,
+
+  flor: t => `<g transform="${t}">${
+    [-90, -18, 54, 126, 198].map(a =>
+      `<path d="M0-5c4-11 16-11 16 1c0 10-12 11-16 1Z" transform="rotate(${a})"/>`).join('')
+  }<circle r="3.4"/></g>`,
+
+  capullo: t => `<g transform="${t}">
+    <path d="M0-14c6 4 8 12 4 18c-1 2-5 2-7 0c-4-6-2-14 3-18Z"/>
+    <path d="M-3 4c-3 1-5 4-4 7c3 1 6-1 7-4"/>
+    <path d="M2 4c3 1 5 4 4 7c-3 1-6-1-7-4"/>
+    <path d="M0 6v12"/></g>`,
+
+  hoja: t => `<g transform="${t}">
+    <path d="M0 0C8-7 20-6 26 0C20 6 8 7 0 0Z"/>
+    <path d="M2 0H24"/></g>`,
+};
+
+/* Media guirnalda: nace en el borde y crece hacia el centro.
+   La otra mitad es esta misma, espejada. */
+const MEDIA_ORLA = `
+  <path d="M16 48C58 33 108 31 150 43"/>
+  <ellipse cx="42" cy="35" rx="8" ry="5.6" transform="rotate(-22 42 35)"/>
+  <ellipse cx="64" cy="41" rx="8" ry="5.6" transform="rotate(16 64 41)"/>
+  <ellipse cx="90" cy="31" rx="7.5" ry="5.2" transform="rotate(-26 90 31)"/>
+  <ellipse cx="114" cy="41" rx="7" ry="5" transform="rotate(14 114 41)"/>
+  ${FLORA.hoja('translate(26,52) rotate(26) scale(.78)')}
+  ${FLORA.capullo('translate(76,54) rotate(22) scale(.78)')}
+  ${FLORA.flor('translate(144,43) scale(.58)')}
+  <g transform="translate(156,46) scale(.8)">
+    <path d="M0 2c12 8 20-6 30 0"/>
+    <path d="M30 2c5-2 8-6 6-10c-3-4-8-1-7 3c1 5 7 7 11 5"/>
+  </g>`;
+
+const orlaFloral = () => `
+<svg class="orla orla-ancha" viewBox="0 0 420 96" fill="none" stroke="currentColor" stroke-width="1.3"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <g class="tz">
+    ${MEDIA_ORLA}
+    <g transform="translate(420,0) scale(-1,1)">${MEDIA_ORLA}</g>
+    ${FLORA.rosa('translate(210,46) scale(1.15)')}
+    ${FLORA.hoja('translate(206,62) rotate(58) scale(.66)')}
+    ${FLORA.hoja('translate(214,62) rotate(122) scale(-.66,.66)')}
+  </g>
+</svg>`;
+
+/* Media rama de la versión compacta (móvil): rama corta, flor y hoja. */
+const MEDIA_MINI = `
+  <path d="M6 50C26 40 46 40 62 47"/>
+  <ellipse cx="20" cy="42" rx="8" ry="5.6" transform="rotate(-20 20 42)"/>
+  <ellipse cx="40" cy="44" rx="7.5" ry="5.2" transform="rotate(14 40 44)"/>
+  ${FLORA.flor('translate(58,46) scale(.62)')}
+  ${FLORA.hoja('translate(14,56) rotate(24) scale(.6)')}`;
+
+const orlaMini = () => `
+<svg class="orla orla-mini" viewBox="0 0 200 96" fill="none" stroke="currentColor" stroke-width="1.7"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <g class="tz">
+    ${MEDIA_MINI}
+    <g transform="translate(200,0) scale(-1,1)">${MEDIA_MINI}</g>
+    ${FLORA.rosa('translate(100,46) scale(1.25)')}
+    ${FLORA.hoja('translate(94,64) rotate(58) scale(.6)')}
+    ${FLORA.hoja('translate(106,64) rotate(122) scale(-.6,.6)')}
+  </g>
+</svg>`;
+
+/* Los trazos se dibujan con stroke-dashoffset. pathLength=1 evita
+   tener que medir cada curva: todas miden "1" y el mismo CSS sirve
+   para el tallo largo y para el pétalo más pequeño. */
+$$('[data-orla]').forEach(caja => {
+  caja.innerHTML = orlaFloral() + orlaMini();
+  $$('.tz > *', caja).forEach((el, i) => {
+    el.setAttribute('pathLength', '1');
+    $$('path, ellipse, circle', el).forEach(p => p.setAttribute('pathLength', '1'));
+    el.style.transitionDelay = `${Math.min(i * 55, 700)}ms`;
+  });
+});
+
+/* Enredaderas verticales en los costados. Se añaden desde JS para no
+   ensuciar el marcado con dos <div> decorativos por sección. */
+$$('[data-lados]').forEach(sec => {
+  const clara = sec.dataset.lados === 'clara' ? ' clara' : '';
+  sec.insertAdjacentHTML('afterbegin',
+    `<div class="orla-lado izq${clara}" aria-hidden="true"></div>` +
+    `<div class="orla-lado der${clara}" aria-hidden="true"></div>`);
+});
+
+/* ═══════════════════════════════════════════════════════════════
    Selector de paletas
    Tailwind lee los colores como "rgb(var(--c-x))", así que basta
    reescribir las variables para que todo el sitio cambie.
@@ -862,7 +1044,7 @@ function aplicarPaleta(i) {
     b.classList.toggle('ring-offset-2', j === i);
   });
 
-  localStorage.setItem('paleta', i);
+  localStorage.setItem('paleta', p.nombre);
 }
 
 $('#listaPaletas').innerHTML = PALETAS.map((p, i) => `
@@ -880,8 +1062,10 @@ $('#listaPaletas').innerHTML = PALETAS.map((p, i) => `
 $$('#listaPaletas button').forEach(b =>
   b.addEventListener('click', () => aplicarPaleta(+b.dataset.p)));
 
-// Arranca en Arena, o en la última elegida
-aplicarPaleta(Number(localStorage.getItem('paleta') ?? 0));
+// Arranca en Borgoña, o en la última elegida (guardada por nombre, para
+// que añadir paletas nuevas no le cambie la elección a quien ya volvió)
+const guardada = PALETAS.findIndex(p => p.nombre === localStorage.getItem('paleta'));
+aplicarPaleta(guardada >= 0 ? guardada : 0);
 
 const panel = $('#panelPaletas');
 $('#btnPaletas').addEventListener('click', () => {
@@ -972,12 +1156,12 @@ $('#paleta').innerHTML = CONFIG.dressCode.paleta.map(c => `
 `).join('');
 
 $('#regalos').innerHTML = CONFIG.regalos.map(r => `
-  <div class="border border-fondo/25 p-7 text-center">
+  <div class="bg-fondo2 border border-linea p-7 text-center">
     <p class="font-serif text-2xl font-light">${r.titulo}</p>
     <div class="linea-orn my-4 text-acento"><span class="text-[10px]">◈</span></div>
-    ${r.lineas.map(l => `<p class="text-sm text-suave leading-relaxed">${l}</p>`).join('')}
+    ${r.lineas.map(l => `<p class="text-sm text-tinta/65 leading-relaxed">${l}</p>`).join('')}
     ${r.cta ? `<a href="${r.url}" target="_blank" rel="noopener"
-      class="mt-5 inline-block border border-fondo/40 px-6 py-2 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-fondo hover:text-hondo transition-colors duration-500">${r.cta}</a>` : ''}
+      class="mt-5 inline-block border border-acento2 text-acento2 px-6 py-2 font-sans text-[10px] tracking-[.25em] uppercase hover:bg-acento2 hover:text-fondo transition-colors duration-500">${r.cta}</a>` : ''}
   </div>
 `).join('');
 
@@ -1304,8 +1488,13 @@ const POSES = {
                acc:'<g transform="translate(65,28) rotate(-6)"><rect x="-10" y="-12" width="20" height="25" rx="2" fill="#FDFBF7" stroke="rgb(var(--c-line))" stroke-width="1.6"/>' +
                    '<g stroke="rgb(var(--c-accent2))" stroke-width="1.6" stroke-linecap="round"><path d="M-5.5-6h11M-5.5 0h11M-5.5 6h7"/></g></g>' },
 
-  // Vestimenta y regalos: despliegan las alas, con el regalo a los pies
+  // Vestimenta: despliegan las alas de gala, con el abanico en alto
   gala:      { nA: -46, nB:  30, oA: -30, oB:  46,
+               acc:'<g transform="translate(65,26)"><path d="M-10 6 A11 11 0 0 1 10 6Z" fill="#FDFBF7" stroke="rgb(var(--c-accent2))" stroke-width="1.6"/>' +
+                   '<path d="M-5 6 0-4M5 6 0-4" stroke="rgb(var(--c-accent2))" stroke-width="1.3"/></g>' },
+
+  // Regalos: aterrizan junto al obsequio
+  regalo:    { nA: -22, nB:  58, oA: -58, oB:  22,
                acc:'<g transform="translate(65,112)"><rect x="-11" y="-10" width="22" height="20" rx="2" fill="rgb(var(--c-accent))"/>' +
                    '<path d="M-11-2h22M0-10v20" stroke="#FDFBF7" stroke-width="2.6"/></g>' },
 
