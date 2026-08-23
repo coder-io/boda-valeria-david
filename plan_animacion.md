@@ -31,61 +31,65 @@ es donde la mayoría verá el sitio.
 
 El plan original iba 1→6, pero ese orden no coincide con el de riesgo/valor. Orden real:
 
-| Orden | Fase | Valor | Riesgo | Depende de |
-|---|---|---|---|---|
-| 1 | Fase 0 — Salvaguardas | — | — | — |
-| 2 | Fase 2 — Pétalos ambientales | Alto | Bajo | nada (ni GSAP) |
-| 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 |
-| 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 |
-| 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a |
-| 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 |
-| 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 |
-| 8 | Fase 6 — Rendimiento y pruebas | — | — | todas |
+| Orden | Fase | Valor | Riesgo | Depende de | Estado |
+|---|---|---|---|---|---|
+| 1 | Fase 0 — Salvaguardas | — | — | — | ✅ Hecho |
+| 2 | Fase 2 — Pétalos ambientales | Alto | Bajo | nada (ni GSAP) | ✅ Hecho |
+| 3 | Fase 1 — GSAP en el terreno | — | Bajo | Fase 0 | ⏳ Siguiente |
+| 4 | Fase 5a — Parallax de portada | Alto | Bajo | Fase 1 | Pendiente |
+| 5 | Fase 4 — Lenis (condicionado) | Medio (solo desktop) | Medio | Fase 5a | Pendiente |
+| 6 | Fase 3 — Migrar el reveal | Bajo | **Alto** | Fases 1 y 4 | Pendiente |
+| 7 | Fase 5b — Split de texto | Medio | Medio | Fase 1 | Pendiente |
+| 8 | Fase 6 — Rendimiento y pruebas | — | — | todas | Pendiente |
 
 Cada fase termina en un commit propio. `index.html` es un único archivo de 91KB; sin
 puntos de retorno, un error sale caro.
 
 ---
 
-## Fase 0 — Salvaguardas (antes de tocar nada)
+## Fase 0 — Salvaguardas (antes de tocar nada) — ✅ Completada
 
-- Commit del estado actual / rama de trabajo.
-- Definir el criterio de aceptación transversal: **con JS de terceros bloqueado, la
-  invitación se sigue leyendo entera.** Se prueba bloqueando los CDN en DevTools.
+- Commit del estado actual / rama de trabajo. (`1d92137` — plan añadido al repo.)
+- Criterio de aceptación transversal definido: **con JS de terceros bloqueado, la
+  invitación se sigue leyendo entera.** Pendiente de ejecutar esta prueba en la Fase 6,
+  una vez haya CDN de terceros que puedan fallar (GSAP).
 
-## Fase 2 — Capa de pétalos ambientales (mobile-first) — *empezar por aquí*
+## Fase 2 — Capa de pétalos ambientales (mobile-first) — ✅ Completada
 
-Independiente de todo lo demás: no toca `scroll-behavior`, no necesita GSAP, no depende
-de Lenis. Es el mayor impacto visual con el menor riesgo.
+Implementada en `410d428`, `ef23201` y `8f6737b`. Sin GSAP ni Lenis, como estaba
+previsto.
 
-- **Extraer `FORMAS` (línea 1585) a un scope compartido antes de nada.** Hoy está
-  declarada *dentro* del IIFE `petalos()`, que hace `return` temprano en la línea 1578
-  si el puntero no es fino — o sea que en mobile, justo donde la capa nueva debe
-  funcionar, esa constante nunca llega a existir.
-- Nueva capa independiente de la actual (`#petalos` sigue siendo el rastro del cursor;
-  esta es una capa aparte, ej. `#petalosAmbiente`, `position: fixed`,
-  `pointer-events: none`).
-- **z-index propio y decidido.** `#petalos` (línea 324) y `#novios` (línea 278)
-  comparten `z-40`; la capa nueva no puede heredar ese valor por accidente.
-- Pétalos generados por tiempo, no por movimiento de mouse — debe funcionar en touch.
-- **Usar Web Animations API (`el.animate()`), no un bucle `requestAnimationFrame`
-  manual.** Es lo que ya hace la capa de cursor (línea 1621) y se compone fuera del
-  hilo principal. El vaivén tipo seno se consigue con ~6 keyframes de `transform`.
-- Movimiento: caída vertical + oscilación lateral (mecerse), rotación propia, variación
-  de velocidad/tamaño/opacidad por pétalo.
-- Cantidad por viewport: ~10-14 vivos en mobile, ~24 en desktop.
-- **Decisión de color pendiente:** las secciones alternan claras (`bg-fondo`,
-  `bg-fondo2`) y oscura (`bg-hondo`), y la capa es `fixed`, así que cruza ambas. Un
-  pétalo blanco es invisible sobre marfil. Opciones: (a) tomar color de las vars del
-  tema como hace la capa de cursor (línea 1594), (b) silueta con trazo/sombra suave que
-  funcione sobre ambos fondos. Decidir antes de implementar.
-- **Dos capas de pétalos en desktop:** el rastro del cursor mantiene hasta 34 pétalos
-  vivos (`MAX`, línea 1581). Sumado al ambiente puede saturar. Decidir: reducir el
-  ambiente cuando `pointer: fine`, o retirar el rastro.
-- Pausar la capa en `visibilitychange` para no gastar batería en segundo plano.
-- Respetar `prefers-reduced-motion`: capa desactivada.
+- **`FORMAS`** extraída del IIFE `petalos()` a scope de módulo compartido, tal como
+  exigía el riesgo original (antes nunca existía en touch por el `return` temprano).
+- **`#petalosAmbiente`**: capa nueva, `position: fixed`, `z-index: 35` propio (no
+  hereda el `40` de `#petalos`/`#novios`).
+- Pétalos generados por tiempo (`setTimeout` recursivo), no por el cursor →
+  funcionan en touch. Movimiento vía `el.animate()` (Web Animations API): caída +
+  vaivén lateral en 5 keyframes + rotación, tal como pedía el plan.
+- **Color resuelto:** blanco con trazo tinta muy sutil (`stroke: rgb(var(--c-ink)/.22)`)
+  + `drop-shadow`, para que se lea tanto sobre fondos claros como oscuros sin
+  coordinar con la sección visible — la opción (b) de las dos que planteaba este
+  documento.
+- **Saturación con la capa del cursor:** no se redujo `MAX` del rastro del cursor;
+  se dejó así tras validación visual con el usuario. Revisar si en la Fase 6 se ve
+  saturado en desktop con puntero fino.
+- Cantidad por viewport: 12 en mobile (<640px), 24 en desktop — dentro del rango que
+  proponía el plan.
+- **Tres planos de profundidad** (mejora no prevista en el plan original, pedida tras
+  ver el resultado): cerca (~50-70px, opaco, cae rápido), media (~34-46px) y lejos
+  (~18-26px, tenue, cae lento), con más peso en los planos lejanos para simular
+  profundidad de campo.
+- Pausa completa en `visibilitychange` (con fix de un bug propio: el `setTimeout`
+  no se reanudaba al volver a la pestaña por un ID de timeout caducado que
+  evaluaba `truthy`).
+- Desactivada bajo `prefers-reduced-motion` (CSS `display:none` + guard que ni
+  arranca el IIFE).
+- **Verificación:** sintaxis validada con `node --check` sobre el script extraído.
+  Visualmente confirmada por el usuario en el navegador — pétalos y profundidad
+  se ven bien. No se probó aún en dispositivo real de gama media (queda para
+  Fase 6).
 
-## Fase 1 — Preparar el terreno (GSAP)
+## Fase 1 — Preparar el terreno (GSAP) — ⏳ En curso
 
 - Añadir CDN de GSAP core + ScrollTrigger junto al `<script>` de Tailwind, **con
   versión fijada** (no `latest`).
