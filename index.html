@@ -400,20 +400,20 @@ tailwind.config = {
 <!-- ══════════ 1. PORTADA ══════════ -->
 <section id="portada" class="relative min-h-[100svh] flex items-end justify-center overflow-hidden" data-pose="saludo">
   <img id="imgPortada" src="img/bn-velero-hq.jpeg" alt="" class="absolute inset-0 w-full h-full object-cover object-center scale-[1.6]">
-  <div class="absolute inset-0 bg-hondo/70"></div>
+  <div class="absolute inset-0 bg-hondo/40 sm:bg-hondo/55"></div>
 
   <div class="relative z-10 text-center px-6 pb-16 sm:pb-20 text-fondo w-full max-w-2xl">
     <p class="font-sans text-xs tracking-[.5em] uppercase text-suave">Nuestra boda</p>
 
     <h1 id="nombresPortada" class="mt-8 font-script text-7xl sm:text-8xl" data-bind="nombres"></h1>
 
-    <div id="fechaPortada" class="mt-12 flex items-stretch justify-center gap-6 sm:gap-10">
+    <div id="fechaPortada" class="mt-8 sm:mt-12 flex items-stretch justify-center gap-6 sm:gap-10">
       <div class="flex flex-col justify-center text-right">
         <span class="font-sans text-xs sm:text-sm tracking-[.35em] uppercase" data-bind="fecha.dia"></span>
       </div>
       <div class="w-px bg-fondo/35"></div>
       <div>
-        <span class="block font-serif text-8xl sm:text-9xl font-light leading-none" data-bind="fecha.numero"></span>
+        <span class="block font-serif text-7xl sm:text-9xl font-light leading-none" data-bind="fecha.numero"></span>
       </div>
       <div class="w-px bg-fondo/35"></div>
       <div class="flex flex-col justify-center text-left">
@@ -422,7 +422,7 @@ tailwind.config = {
       </div>
     </div>
 
-    <p id="fraseHero" class="mt-12 max-w-md mx-auto font-serif text-2xl sm:text-3xl italic font-light leading-relaxed" data-bind="frasePortada"></p>
+    <p id="fraseHero" class="hidden sm:block mt-12 max-w-md mx-auto font-serif text-2xl sm:text-3xl italic font-light leading-relaxed" data-bind="frasePortada"></p>
   </div>
 
   <a href="#padres" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-fondo/70 animate-bounce">↓</a>
