@@ -1061,34 +1061,32 @@ $$('[data-bind]').forEach(el => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   Portada: nombre, luego fecha, luego frase
+   Portada: nombre "escribiéndose", luego fecha, luego frase
    Tiene que correr después del data-bind de arriba: antes de eso el
-   <h1> está vacío y no habría nada que partir.
-   Por letra se ve mal aquí: font-script es una cursiva conectada
-   (Great Vibes) y SplitText mete cada carácter en su propia caja
-   inline-block, lo que corta la conexión entre letras. Dividir por
-   palabras ("Valeria", "&", "David") evita ese problema y sigue
-   dando una entrada escalonada. gsap.from() es correcto en este
-   caso —a diferencia del reveal migrado más abajo— porque ninguno
-   de estos elementos tiene un estado oculto por CSS de antemano: su
-   estilo actual ya es el destino final que GSAP necesita detectar.
+   <h1> está vacío y no habría nada que animar.
+   Por letra se ve mal aquí con SplitText: font-script es una
+   cursiva conectada (Great Vibes) y partir en caracteres mete cada
+   uno en su propia caja inline-block, cortando la conexión entre
+   letras. En su lugar se anima un clip-path de izquierda a derecha
+   sobre el <h1> completo: no toca los glifos, así que la cursiva
+   sigue intacta y el efecto se lee como si se fuera "escribiendo".
+   El inset vertical negativo (-20%) evita cortar los trazos altos/
+   bajos (ascendentes y descendentes) de la fuente mientras se revela.
    Fecha y frase quedan en un timeline aparte: arrancan recién cuando
    termina la animación del nombre, no en paralelo con ella.
    ═══════════════════════════════════════════════════════════════ */
-if (animGsap.gsapListo && animGsap.splitListo && !animGsap.reducida) {
+if (animGsap.gsapListo && !animGsap.reducida) {
   const h1Nombres    = $('#nombresPortada');
   const fechaPortada = $('#fechaPortada');
   const fraseHero    = $('#fraseHero');
 
   if (h1Nombres && h1Nombres.textContent.trim()) {
-    h1Nombres.setAttribute('aria-label', h1Nombres.textContent);
-    const partido = new SplitText(h1Nombres, { type: 'words' });
     const tl = gsap.timeline({ delay: .2 });
 
-    tl.from(partido.words, {
-      opacity: 0, y: 24,
-      duration: .9, ease: 'power2.out', stagger: .15,
-    });
+    tl.fromTo(h1Nombres,
+      { clipPath: 'inset(-20% 100% -20% 0%)' },
+      { clipPath: 'inset(-20% 0% -20% 0%)', duration: 1.6, ease: 'power1.inOut' }
+    );
     if (fechaPortada) {
       tl.from(fechaPortada, { opacity: 0, y: 16, duration: .7, ease: 'power2.out' });
     }
